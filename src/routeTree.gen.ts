@@ -10,33 +10,167 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CalendarRouteImport } from './routes/calendar'
+import { Route as GardenRouteImport } from './routes/garden'
+import { Route as GuidesRouteImport } from './routes/guides'
+import { Route as LibraryRouteImport } from './routes/library'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ToolsIndexRouteImport } from './routes/tools.index'
+import { Route as ToolsPlannerRouteImport } from './routes/tools.planner'
+import { Route as ToolsSeedStartingRouteImport } from './routes/tools.seed-starting'
+import { Route as ToolsSoilRouteImport } from './routes/tools.soil'
+import { Route as ToolsWateringRouteImport } from './routes/tools.watering'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalendarRoute = CalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GardenRoute = GardenRouteImport.update({
+  id: '/garden',
+  path: '/garden',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesRoute = GuidesRouteImport.update({
+  id: '/guides',
+  path: '/guides',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsIndexRoute = ToolsIndexRouteImport.update({
+  id: '/tools/',
+  path: '/tools/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsPlannerRoute = ToolsPlannerRouteImport.update({
+  id: '/tools/planner',
+  path: '/tools/planner',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsSeedStartingRoute = ToolsSeedStartingRouteImport.update({
+  id: '/tools/seed-starting',
+  path: '/tools/seed-starting',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsSoilRoute = ToolsSoilRouteImport.update({
+  id: '/tools/soil',
+  path: '/tools/soil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsWateringRoute = ToolsWateringRouteImport.update({
+  id: '/tools/watering',
+  path: '/tools/watering',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calendar': typeof CalendarRoute
+  '/garden': typeof GardenRoute
+  '/guides': typeof GuidesRoute
+  '/library': typeof LibraryRoute
+  '/settings': typeof SettingsRoute
+  '/tools/planner': typeof ToolsPlannerRoute
+  '/tools/seed-starting': typeof ToolsSeedStartingRoute
+  '/tools/soil': typeof ToolsSoilRoute
+  '/tools/watering': typeof ToolsWateringRoute
+  '/tools/': typeof ToolsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calendar': typeof CalendarRoute
+  '/garden': typeof GardenRoute
+  '/guides': typeof GuidesRoute
+  '/library': typeof LibraryRoute
+  '/settings': typeof SettingsRoute
+  '/tools/planner': typeof ToolsPlannerRoute
+  '/tools/seed-starting': typeof ToolsSeedStartingRoute
+  '/tools/soil': typeof ToolsSoilRoute
+  '/tools/watering': typeof ToolsWateringRoute
+  '/tools': typeof ToolsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/calendar': typeof CalendarRoute
+  '/garden': typeof GardenRoute
+  '/guides': typeof GuidesRoute
+  '/library': typeof LibraryRoute
+  '/settings': typeof SettingsRoute
+  '/tools/planner': typeof ToolsPlannerRoute
+  '/tools/seed-starting': typeof ToolsSeedStartingRoute
+  '/tools/soil': typeof ToolsSoilRoute
+  '/tools/watering': typeof ToolsWateringRoute
+  '/tools/': typeof ToolsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/calendar'
+    | '/garden'
+    | '/guides'
+    | '/library'
+    | '/settings'
+    | '/tools/planner'
+    | '/tools/seed-starting'
+    | '/tools/soil'
+    | '/tools/watering'
+    | '/tools/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/calendar'
+    | '/garden'
+    | '/guides'
+    | '/library'
+    | '/settings'
+    | '/tools/planner'
+    | '/tools/seed-starting'
+    | '/tools/soil'
+    | '/tools/watering'
+    | '/tools'
+  id:
+    | '__root__'
+    | '/'
+    | '/calendar'
+    | '/garden'
+    | '/guides'
+    | '/library'
+    | '/settings'
+    | '/tools/planner'
+    | '/tools/seed-starting'
+    | '/tools/soil'
+    | '/tools/watering'
+    | '/tools/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CalendarRoute: typeof CalendarRoute
+  GardenRoute: typeof GardenRoute
+  GuidesRoute: typeof GuidesRoute
+  LibraryRoute: typeof LibraryRoute
+  SettingsRoute: typeof SettingsRoute
+  ToolsPlannerRoute: typeof ToolsPlannerRoute
+  ToolsSeedStartingRoute: typeof ToolsSeedStartingRoute
+  ToolsSoilRoute: typeof ToolsSoilRoute
+  ToolsWateringRoute: typeof ToolsWateringRoute
+  ToolsIndexRoute: typeof ToolsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +182,91 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/garden': {
+      id: '/garden'
+      path: '/garden'
+      fullPath: '/garden'
+      preLoaderRoute: typeof GardenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides': {
+      id: '/guides'
+      path: '/guides'
+      fullPath: '/guides'
+      preLoaderRoute: typeof GuidesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/': {
+      id: '/tools/'
+      path: '/tools'
+      fullPath: '/tools/'
+      preLoaderRoute: typeof ToolsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/planner': {
+      id: '/tools/planner'
+      path: '/tools/planner'
+      fullPath: '/tools/planner'
+      preLoaderRoute: typeof ToolsPlannerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/seed-starting': {
+      id: '/tools/seed-starting'
+      path: '/tools/seed-starting'
+      fullPath: '/tools/seed-starting'
+      preLoaderRoute: typeof ToolsSeedStartingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/soil': {
+      id: '/tools/soil'
+      path: '/tools/soil'
+      fullPath: '/tools/soil'
+      preLoaderRoute: typeof ToolsSoilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools/watering': {
+      id: '/tools/watering'
+      path: '/tools/watering'
+      fullPath: '/tools/watering'
+      preLoaderRoute: typeof ToolsWateringRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CalendarRoute: CalendarRoute,
+  GardenRoute: GardenRoute,
+  GuidesRoute: GuidesRoute,
+  LibraryRoute: LibraryRoute,
+  SettingsRoute: SettingsRoute,
+  ToolsPlannerRoute: ToolsPlannerRoute,
+  ToolsSeedStartingRoute: ToolsSeedStartingRoute,
+  ToolsSoilRoute: ToolsSoilRoute,
+  ToolsWateringRoute: ToolsWateringRoute,
+  ToolsIndexRoute: ToolsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
