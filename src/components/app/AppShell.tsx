@@ -57,12 +57,12 @@ const linkBase =
   "group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[0.9rem] font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-primary";
 const linkActive = "bg-secondary text-primary font-semibold shadow-[inset_3px_0_0_var(--color-leaf)]";
 
-function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void }) {
+function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: (() => void) | undefined }) {
   return (
     <Link
       to={item.to}
       onClick={onNavigate}
-      activeOptions={{ exact: item.exact }}
+      activeOptions={{ exact: item.exact ?? false }}
       className={linkBase}
       activeProps={{ className: linkActive }}
     >
@@ -81,7 +81,7 @@ export function initials(name: string) {
     .toUpperCase();
 }
 
-function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+function SidebarContent({ onNavigate }: { onNavigate?: (() => void) | undefined }) {
   const { settings, setAddPlantOpen } = useGarden();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const inTools = pathname.startsWith("/tools");
@@ -203,7 +203,7 @@ function GlobalSearch() {
       className="relative w-full max-w-xl"
       onSubmit={(e) => {
         e.preventDefault();
-        navigate({ to: "/garden", search: { q: q.trim() || undefined } });
+        navigate({ to: "/garden", search: q.trim() ? { q: q.trim() } : {} });
         setFocused(false);
       }}
     >
@@ -317,7 +317,7 @@ function UserMenu() {
           <Link to="/settings">Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/garden" search={{ q: undefined }}>My Garden</Link>
+          <Link to="/garden" search={{}}>My Garden</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

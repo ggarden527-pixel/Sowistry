@@ -60,7 +60,7 @@ function Dashboard() {
     {
       icon: Leaf,
       title: attention.length ? `${attention.length} plants need extra care` : "Garden looking strong",
-      body: attention.length
+      body: attention[0]
         ? `${attention[0].name} is marked “${attention[0].health}”. Check for dry soil, pests or too little light.`
         : "Every plant is healthy or thriving. Keep up the routine.",
       to: "/guides" as const,
@@ -124,7 +124,7 @@ function Dashboard() {
 
         <section className="mt-10">
           <SectionTitle title="My Garden">
-            <Link to="/garden" search={{ q: undefined }} className="inline-flex items-center gap-1 text-sm font-semibold text-leaf hover:underline">
+            <Link to="/garden" search={{}} className="inline-flex items-center gap-1 text-sm font-semibold text-leaf hover:underline">
               View all <ArrowRight className="h-4 w-4" />
             </Link>
           </SectionTitle>

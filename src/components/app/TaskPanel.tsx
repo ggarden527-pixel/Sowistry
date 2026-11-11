@@ -18,7 +18,7 @@ export const taskIcon: Record<TaskType, LucideIcon> = {
   harvest: ShoppingBasket,
 };
 
-export function TaskItem({ task, tone = "default" }: { task: Task; tone?: "default" | "overdue" }) {
+export function TaskItem({ task, tone = "default" }: { task: Task; tone?: "default" | "overdue" | undefined }) {
   const { toggleTask } = useGarden();
   const today = getToday();
   const d = daysFrom(task.due, today);
@@ -69,7 +69,7 @@ export function TaskItem({ task, tone = "default" }: { task: Task; tone?: "defau
   );
 }
 
-function Group({ label, tasks, tone, empty }: { label: string; tasks: Task[]; tone?: "overdue"; empty?: string }) {
+function Group({ label, tasks, tone, empty }: { label: string; tasks: Task[]; tone?: "overdue" | undefined; empty?: string }) {
   if (!tasks.length && !empty) return null;
   return (
     <section>

@@ -10,9 +10,10 @@ import { needsWater } from "@/lib/inventory";
 import { plantImage } from "@/lib/plant-images";
 
 export const Route = createFileRoute("/garden")({
-  validateSearch: (search: Record<string, unknown>): { q?: string } => ({
-    q: typeof search.q === "string" && search.q ? search.q : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { q?: string } => {
+    const q = search["q"];
+    return typeof q === "string" && q ? { q } : {};
+  },
   head: () => ({
     meta: [
       { title: "My Garden — Sowistry" },

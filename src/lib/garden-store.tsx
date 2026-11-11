@@ -87,7 +87,7 @@ export function GardenProvider({ children }: { children: ReactNode }) {
       const todayISO = toISO(getToday());
       const plant = plants.find((p) => p.id === id);
       if (!plant) return;
-      const keyword = plant.name.split(" ")[0];
+      const keyword = plant.name.split(" ")[0] ?? plant.name;
       setPlants((prev) => prev.map((p) => (p.id === id ? { ...p, lastWatered: todayISO } : p)));
       setTasks((prev) =>
         prev.map((t) =>

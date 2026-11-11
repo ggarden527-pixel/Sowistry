@@ -7,9 +7,9 @@ export interface Task {
   title: string;
   type: TaskType;
   due: string;
-  time?: string;
-  imageKey?: string;
-  plantId?: string;
+  time?: string | undefined;
+  imageKey?: string | undefined;
+  plantId?: string | undefined;
   done: boolean;
 }
 

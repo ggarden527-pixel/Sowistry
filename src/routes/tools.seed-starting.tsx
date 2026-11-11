@@ -25,7 +25,7 @@ function SeedPage() {
   const [cropName, setCropName] = useState("Tomato");
   const [plants, setPlants] = useState(6);
   const [germ, setGerm] = useState(80);
-  const crop = SEED_CROPS.find((c) => c.name === cropName) ?? SEED_CROPS[0];
+  const crop = SEED_CROPS.find((c) => c.name === cropName) ?? SEED_CROPS[0]!;
   const frostDate = new Date(`${frost}T00:00:00`);
   const valid = !Number.isNaN(frostDate.getTime());
   const r = valid ? seedSchedule(frostDate, crop, plants, germ) : null;
