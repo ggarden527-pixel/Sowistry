@@ -62,6 +62,7 @@ function PlannerPage() {
   const paint = (i: number) => setCells((prev) => prev.map((v, j) => (j === i ? brush : v)));
   const totals = plannerTotals(cells);
   const planted = cells.filter(Boolean).length;
+  const totalPlants = Object.values(totals).reduce((sum, t) => sum + t.plants, 0);
 
   return (
     <div className="mx-auto max-w-7xl" onMouseUp={() => setPainting(false)} onMouseLeave={() => setPainting(false)}>
@@ -75,7 +76,7 @@ function PlannerPage() {
         }
       />
 
-      <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)_280px]">
+      <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)] 2xl:grid-cols-[240px_minmax(0,1fr)_260px]">
         <div className="surface space-y-4 self-start p-5">
           <p className="eyebrow">Plants</p>
           <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
@@ -113,9 +114,9 @@ function PlannerPage() {
           </div>
         </div>
 
-        <div className="surface overflow-x-auto p-5">
-          <div className="mx-auto w-fit rounded-2xl bg-primary p-3">
-            <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${cols}, minmax(2.75rem, 3.5rem))` }}>
+        <div className="surface min-w-0 self-start p-4 sm:p-5">
+          <div className="mx-auto rounded-2xl bg-primary p-2 sm:p-3" style={{ maxWidth: `${cols * 3.75 + 1.5}rem` }}>
+            <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
               {cells.map((v, i) => (
                 <button
                   key={i}
@@ -138,17 +139,17 @@ function PlannerPage() {
           </div>
         </div>
 
-        <div className="surface self-start p-5">
+        <div className="surface self-start p-5 lg:col-span-2 2xl:col-span-1">
           <p className="eyebrow">Bed summary</p>
-          <p className="mt-2 font-display text-4xl font-semibold text-primary">{Object.values(totals).reduce((s, t) => s + t.plants, 0)}</p>
-          <p className="text-sm text-muted-foreground">plants · {planted} of {rows * cols} sq ft used</p>
+          <p className="mt-2 font-display text-4xl font-semibold text-primary">{totalPlants}</p>
+          <p className="text-sm text-muted-foreground">{totalPlants === 1 ? "plant" : "plants"} · {planted} of {rows * cols} sq ft used</p>
           <div className="mt-4 space-y-2">
             {Object.entries(totals).map(([key, t]) => {
               const crop = PLANNER_CROPS.find((c) => c.key === key);
               return (
                 <div key={key} className="flex items-center justify-between rounded-lg bg-background px-3 py-2 text-sm">
                   <span className="font-semibold text-primary">{crop?.name}</span>
-                  <span className="text-muted-foreground">{t.plants} plants · {t.squares} sq</span>
+                  <span className="text-muted-foreground">{t.plants} {t.plants === 1 ? "plant" : "plants"} · {t.squares} sq</span>
                 </div>
               );
             })}

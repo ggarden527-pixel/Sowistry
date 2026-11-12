@@ -46,10 +46,10 @@ function GardenPage() {
         }
       />
 
-      <div className="mb-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-10 grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {spaces.map((s) => (
           <div key={s.loc} className="surface flex items-center gap-3 p-4">
-            <div className="flex -space-x-3">
+            <div className="flex shrink-0 -space-x-3">
               {s.list.slice(0, 3).map((p) => (
                 <img key={p.id} src={plantImage(p.imageKey)} alt="" loading="lazy" className="h-10 w-10 rounded-full border-2 border-card object-cover" />
               ))}

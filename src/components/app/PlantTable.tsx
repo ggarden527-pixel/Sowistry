@@ -50,8 +50,12 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
   const SortIcon = ({ k }: { k: SortKey }) =>
     sort !== k ? <ArrowUpDown className="h-3.5 w-3.5 opacity-50" /> : dir === "asc" ? <ArrowUp className="h-3.5 w-3.5" /> : <ArrowDown className="h-3.5 w-3.5" />;
 
-  const th = "eyebrow px-5 py-3.5 text-left font-bold";
-  const sortBtn = "inline-flex items-center gap-1.5 uppercase hover:text-primary";
+  const th = "eyebrow px-3 py-3.5 text-left font-bold @lg:px-5";
+  const sortBtn = "inline-flex items-center gap-1.5 whitespace-nowrap uppercase hover:text-primary";
+  // Columns drop away as the table's own width shrinks, so it never needs sideways scrolling.
+  const colHealth = "hidden @[44rem]:table-cell";
+  const colFeed = "hidden @[54rem]:table-cell";
+  const colSun = "hidden @[62rem]:table-cell";
 
   return (
     <div>
@@ -108,9 +112,9 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
         </div>
       )}
 
-      <div className="surface overflow-hidden">
+      <div className="surface @container overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[820px]">
+          <table className="w-full">
             <thead className="border-b border-border bg-background/60">
               <tr>
                 <th className={th}>
@@ -119,9 +123,9 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
                 <th className={th}>
                   <button type="button" className={sortBtn} onClick={() => toggleSort("watering")}>Next watering <SortIcon k="watering" /></button>
                 </th>
-                <th className={th}>Sunlight</th>
-                <th className={th}>Fertilizer</th>
-                <th className={th}>
+                <th className={cn(th, colSun)}>Sunlight</th>
+                <th className={cn(th, colFeed)}>Fertilizer</th>
+                <th className={cn(th, colHealth)}>
                   <button type="button" className={sortBtn} onClick={() => toggleSort("health")}>Health <SortIcon k="health" /></button>
                 </th>
                 <th className={cn(th, "text-right")}><span className="sr-only">Actions</span></th>
@@ -141,28 +145,29 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
                 const lastAgo = daysFrom(p.lastWatered, today);
                 return (
                   <tr key={p.id} className="transition-colors hover:bg-background/70">
-                    <td className="px-5 py-4">
+                    <td className="w-full min-w-[7rem] px-3 py-4 @lg:px-5">
                       <div className="flex items-center gap-3.5">
-                        <PlantThumb imageKey={p.imageKey} />
+                        <PlantThumb imageKey={p.imageKey} className="hidden @md:block" />
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-primary">{p.name}</p>
-                          <p className="truncate text-xs text-muted-foreground">
+                          <p className="line-clamp-2 text-sm font-semibold text-primary">{p.name}</p>
+                          <p className="line-clamp-1 text-xs text-muted-foreground">
                             {p.species}
                             {showLocation && <> · {p.location}</>}
                           </p>
+                          <HealthBadge health={p.health} className="mt-1.5 @[44rem]:hidden" />
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-3 py-4 @md:whitespace-nowrap @lg:px-5">
                       <p className={cn("text-sm font-semibold", w < 0 ? "text-destructive" : w === 0 ? "text-warning" : "text-primary")}>
                         {relativeDayLabel(w)}
                       </p>
                       <p className="text-xs text-muted-foreground">Last: {agoLabel(lastAgo)}</p>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className={cn("whitespace-nowrap px-5 py-4", colSun)}>
                       <SunMeter sunlight={p.sunlight} />
                     </td>
-                    <td className="px-5 py-4">
+                    <td className={cn("whitespace-nowrap px-5 py-4", colFeed)}>
                       {f <= 0 ? (
                         <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-warning">
                           <TriangleAlert className="h-4 w-4" /> Due now
@@ -174,11 +179,11 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
                       )}
                       <p className="text-xs text-muted-foreground">Every {p.fertilizeEveryDays} days</p>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className={cn("whitespace-nowrap px-5 py-4", colHealth)}>
                       <HealthBadge health={p.health} />
                     </td>
-                    <td className="px-5 py-4">
-                      <div className="flex justify-end gap-1.5">
+                    <td className="px-3 py-4 @lg:px-4">
+                      <div className="flex flex-col items-end gap-1.5 @md:flex-row @md:justify-end">
                         <button
                           type="button"
                           onClick={() => {
@@ -189,7 +194,7 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
                           className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-water-soft px-3 text-xs font-semibold text-water transition hover:brightness-95 disabled:opacity-40"
                           aria-label={`Mark ${p.name} as watered`}
                         >
-                          <Droplets className="h-3.5 w-3.5" /> {lastAgo === 0 ? "Watered" : "Water"}
+                          <Droplets className="h-3.5 w-3.5" /> <span className="hidden @md:inline">{lastAgo === 0 ? "Watered" : "Water"}</span>
                         </button>
                         {allowDelete && (
                           <button
