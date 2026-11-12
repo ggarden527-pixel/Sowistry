@@ -12,3 +12,9 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /garden
+Disallow: /calendar
+Disallow: /settings
+Disallow: /tools
+Disallow: /auth

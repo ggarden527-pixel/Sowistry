@@ -17,11 +17,13 @@ export const SEASONAL_ADVICE: { month: string; headline: string; tips: string[] 
 ];
 
 /** Crops with a sowing, planting or harvest window in the given month. */
-export function cropsForMonth(month: number) {
-  return PLANTING_WINDOWS.flatMap((w) => {
-    if (w.sow.includes(month)) return [{ crop: w.crop, action: "Sow" as const }];
-    if (w.plant.includes(month)) return [{ crop: w.crop, action: "Plant out" as const }];
-    if (w.harvest.includes(month)) return [{ crop: w.crop, action: "Harvest" as const }];
+export type CropAction = { crop: string; action: "Sow" | "Plant out" | "Harvest" };
+
+export function cropsForMonth(month: number): CropAction[] {
+  return PLANTING_WINDOWS.flatMap((w): CropAction[] => {
+    if (w.sow.includes(month)) return [{ crop: w.crop, action: "Sow" }];
+    if (w.plant.includes(month)) return [{ crop: w.crop, action: "Plant out" }];
+    if (w.harvest.includes(month)) return [{ crop: w.crop, action: "Harvest" }];
     return [];
   });
 }

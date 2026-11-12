@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as SiteRouteRouteImport } from './routes/_site/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedGardenRouteImport } from './routes/_authenticated/garden'
@@ -23,6 +24,7 @@ import { Route as AuthenticatedToolsSeedStartingRouteImport } from './routes/_au
 import { Route as AuthenticatedToolsSoilRouteImport } from './routes/_authenticated/tools/soil'
 import { Route as AuthenticatedToolsWateringRouteImport } from './routes/_authenticated/tools/watering'
 import { Route as SiteGuidesIndexRouteImport } from './routes/_site/guides/index'
+import { Route as SiteGuidesSlugRouteImport } from './routes/_site/guides/$slug'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -30,6 +32,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 } as any)
 const SiteRouteRoute = SiteRouteRouteImport.update({
   id: '/_site',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
@@ -95,9 +102,15 @@ const SiteGuidesIndexRoute = SiteGuidesIndexRouteImport.update({
   path: '/guides/',
   getParentRoute: () => SiteRouteRoute,
 } as any)
+const SiteGuidesSlugRoute = SiteGuidesSlugRouteImport.update({
+  id: '/guides/$slug',
+  path: '/guides/$slug',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
+  '/auth': typeof AuthRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/garden': typeof AuthenticatedGardenRoute
@@ -107,11 +120,13 @@ export interface FileRoutesByFullPath {
   '/tools/seed-starting': typeof AuthenticatedToolsSeedStartingRoute
   '/tools/soil': typeof AuthenticatedToolsSoilRoute
   '/tools/watering': typeof AuthenticatedToolsWateringRoute
+  '/guides/$slug': typeof SiteGuidesSlugRoute
   '/tools/': typeof AuthenticatedToolsIndexRoute
   '/guides/': typeof SiteGuidesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof SiteIndexRoute
+  '/auth': typeof AuthRoute
   '/calendar': typeof AuthenticatedCalendarRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/garden': typeof AuthenticatedGardenRoute
@@ -121,6 +136,7 @@ export interface FileRoutesByTo {
   '/tools/seed-starting': typeof AuthenticatedToolsSeedStartingRoute
   '/tools/soil': typeof AuthenticatedToolsSoilRoute
   '/tools/watering': typeof AuthenticatedToolsWateringRoute
+  '/guides/$slug': typeof SiteGuidesSlugRoute
   '/tools': typeof AuthenticatedToolsIndexRoute
   '/guides': typeof SiteGuidesIndexRoute
 }
@@ -128,6 +144,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_site': typeof SiteRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/garden': typeof AuthenticatedGardenRoute
@@ -138,6 +155,7 @@ export interface FileRoutesById {
   '/_authenticated/tools/seed-starting': typeof AuthenticatedToolsSeedStartingRoute
   '/_authenticated/tools/soil': typeof AuthenticatedToolsSoilRoute
   '/_authenticated/tools/watering': typeof AuthenticatedToolsWateringRoute
+  '/_site/guides/$slug': typeof SiteGuidesSlugRoute
   '/_authenticated/tools/': typeof AuthenticatedToolsIndexRoute
   '/_site/guides/': typeof SiteGuidesIndexRoute
 }
@@ -145,6 +163,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/calendar'
     | '/dashboard'
     | '/garden'
@@ -154,11 +173,13 @@ export interface FileRouteTypes {
     | '/tools/seed-starting'
     | '/tools/soil'
     | '/tools/watering'
+    | '/guides/$slug'
     | '/tools/'
     | '/guides/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/calendar'
     | '/dashboard'
     | '/garden'
@@ -168,12 +189,14 @@ export interface FileRouteTypes {
     | '/tools/seed-starting'
     | '/tools/soil'
     | '/tools/watering'
+    | '/guides/$slug'
     | '/tools'
     | '/guides'
   id:
     | '__root__'
     | '/_authenticated'
     | '/_site'
+    | '/auth'
     | '/_authenticated/calendar'
     | '/_authenticated/dashboard'
     | '/_authenticated/garden'
@@ -184,6 +207,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tools/seed-starting'
     | '/_authenticated/tools/soil'
     | '/_authenticated/tools/watering'
+    | '/_site/guides/$slug'
     | '/_authenticated/tools/'
     | '/_site/guides/'
   fileRoutesById: FileRoutesById
@@ -191,6 +215,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   SiteRouteRoute: typeof SiteRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -207,6 +232,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof SiteRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/calendar': {
@@ -293,6 +325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteGuidesIndexRouteImport
       parentRoute: typeof SiteRouteRoute
     }
+    '/_site/guides/$slug': {
+      id: '/_site/guides/$slug'
+      path: '/guides/$slug'
+      fullPath: '/guides/$slug'
+      preLoaderRoute: typeof SiteGuidesSlugRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
   }
 }
 
@@ -326,12 +365,14 @@ const AuthenticatedRouteRouteWithChildren =
 interface SiteRouteRouteChildren {
   SiteLibraryRoute: typeof SiteLibraryRoute
   SiteIndexRoute: typeof SiteIndexRoute
+  SiteGuidesSlugRoute: typeof SiteGuidesSlugRoute
   SiteGuidesIndexRoute: typeof SiteGuidesIndexRoute
 }
 
 const SiteRouteRouteChildren: SiteRouteRouteChildren = {
   SiteLibraryRoute: SiteLibraryRoute,
   SiteIndexRoute: SiteIndexRoute,
+  SiteGuidesSlugRoute: SiteGuidesSlugRoute,
   SiteGuidesIndexRoute: SiteGuidesIndexRoute,
 }
 
@@ -342,6 +383,7 @@ const SiteRouteRouteWithChildren = SiteRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   SiteRouteRoute: SiteRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
