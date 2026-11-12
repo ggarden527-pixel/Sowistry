@@ -34,3 +34,11 @@ device-only preview mode. Configure Google and Apple as OAuth providers in Supab
 your app's `/auth` URL as a redirect destination. Use the provider callback URL shown in the
 Supabase dashboard when configuring Google and Apple. Never put a Supabase service-role key in
 browser code.
+
+Signed-in garden data is stored in `public.user_gardens`. Have Lovable create this table with
+`user_id uuid` as the primary key and a foreign key to `auth.users(id)` with cascade delete;
+`plants jsonb not null default '[]'`, `tasks jsonb not null default '[]'`,
+`profile jsonb`, and `planner_bed jsonb`. Enable row-level security and add select, insert,
+and update policies restricted to `auth.uid() = user_id`. Grant those operations to the
+`authenticated` role. Until the table exists, authenticated garden operations report a
+database error; they do not silently claim data was saved.

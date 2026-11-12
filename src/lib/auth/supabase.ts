@@ -85,15 +85,17 @@ if (Boolean(supabaseUrl) !== Boolean(supabaseKey)) {
   throw new Error("Configure both VITE_SUPABASE_URL and a Supabase publishable/anon key.");
 }
 
-export const supabaseAuth: AuthBackend | null =
+export const supabaseClient: SupabaseClient | null =
   supabaseUrl && supabaseKey
-    ? createSupabaseAuth(
-        createClient(supabaseUrl, supabaseKey, {
-          auth: {
-            autoRefreshToken: true,
-            persistSession: true,
-            detectSessionInUrl: true,
-          },
-        }),
-      )
+    ? createClient(supabaseUrl, supabaseKey, {
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true,
+        },
+      })
     : null;
+
+export const supabaseAuth: AuthBackend | null = supabaseClient
+  ? createSupabaseAuth(supabaseClient)
+  : null;

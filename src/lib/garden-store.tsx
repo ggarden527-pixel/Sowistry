@@ -81,15 +81,33 @@ export function GardenProvider({ children }: { children: ReactNode }) {
         setProfile(g.profile);
         setLoadedFor(userId);
       })
-      .catch(() => alive && toast.error("We couldn't load your garden. Please refresh."));
+      .catch((error: unknown) => {
+        if (!alive) return;
+        toast.error("We couldn't load your garden.", {
+          description:
+            error instanceof Error
+              ? error.message
+              : "Check your database connection and try again.",
+        });
+      });
     return () => {
       alive = false;
     };
   }, [userId]);
 
-  const persist = useCallback((p: Promise<void>) => {
-    p.catch(() => toast.error("That change didn't save. Please try again."));
-  }, []);
+  const persist = useCallback(
+    (p: Promise<void>) => {
+      p.catch((error: unknown) =>
+        toast.error("That change didn't save.", {
+          description:
+            error instanceof Error
+              ? error.message
+              : "Check your database connection and try again.",
+        }),
+      );
+    },
+    [],
+  );
 
   const addPlant = useCallback(
     (p: Omit<Plant, "id">) => {

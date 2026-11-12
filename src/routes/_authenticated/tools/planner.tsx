@@ -1,12 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Eraser, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { PageHeader } from "@/components/app/bits";
 import { NumberField } from "@/components/app/ToolLayout";
 import { Button } from "@/components/ui/button";
 import { PLANNER_CROPS, plannerTotals } from "@/lib/calculators";
+import { useAuth } from "@/lib/auth/context";
 import { plantImage } from "@/lib/plant-images";
+import { gardenRepo } from "@/lib/repo";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/tools/planner")({
@@ -21,31 +24,63 @@ export const Route = createFileRoute("/_authenticated/tools/planner")({
   component: PlannerPage,
 });
 
-const KEY = "sowistry:planner";
-
 function PlannerPage() {
+  const { user } = useAuth();
   const [rows, setRows] = useState(4);
   const [cols, setCols] = useState(8);
   const [cells, setCells] = useState<(string | null)[]>(() => Array(32).fill(null));
   const [brush, setBrush] = useState<string | null>("tomato");
   const [painting, setPainting] = useState(false);
+  const [loadedFor, setLoadedFor] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      const saved = JSON.parse(window.localStorage.getItem(KEY) ?? "null") as { rows: number; cols: number; cells: (string | null)[] } | null;
-      if (saved) {
-        setRows(saved.rows);
-        setCols(saved.cols);
-        setCells(saved.cells);
-      }
-    } catch {
-      /* ignore */
-    }
-  }, []);
+    setLoadedFor(null);
+    setRows(4);
+    setCols(8);
+    setCells(Array(32).fill(null));
+    if (!user?.id) return;
+    let active = true;
+    void gardenRepo
+      .loadBed(user.id)
+      .then((saved) => {
+        if (!active) return;
+        if (saved) {
+          setRows(saved.rows);
+          setCols(saved.cols);
+          setCells(saved.cells);
+        }
+        setLoadedFor(user.id);
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+        toast.error("We couldn't load your garden plan.", {
+          description:
+            error instanceof Error
+              ? error.message
+              : "Check your database connection and try again.",
+        });
+      });
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
 
   useEffect(() => {
-    window.localStorage.setItem(KEY, JSON.stringify({ rows, cols, cells }));
-  }, [rows, cols, cells]);
+    if (!user?.id || loadedFor !== user.id) return;
+    const timer = window.setTimeout(() => {
+      void gardenRepo
+        .saveBed(user.id, { rows, cols, cells })
+        .catch((error: unknown) => {
+          toast.error("Your garden plan didn't save.", {
+            description:
+              error instanceof Error
+                ? error.message
+                : "Check your database connection and try again.",
+          });
+        });
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [user?.id, loadedFor, rows, cols, cells]);
 
   const resize = (r: number, c: number) => {
     const nr = Math.min(12, Math.max(1, r));
