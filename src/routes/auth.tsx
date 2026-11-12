@@ -63,7 +63,11 @@ function AuthPage() {
       if (r.needsEmailConfirmation) setMessage("Check your email to confirm your account.");
     });
   };
-  const oauth = (p: OAuthProvider) => void run(() => auth.signInWithOAuth(p, `${window.location.origin}/auth`));
+  const oauth = (p: OAuthProvider) => {
+    const returnTo = new URL("/auth", window.location.origin);
+    returnTo.searchParams.set("redirect", dest);
+    void run(() => auth.signInWithOAuth(p, returnTo.toString()));
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">

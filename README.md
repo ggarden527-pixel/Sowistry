@@ -24,3 +24,13 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Authentication
+
+Set `VITE_SUPABASE_URL` and either `VITE_SUPABASE_PUBLISHABLE_KEY` or
+`VITE_SUPABASE_ANON_KEY` in the deployment environment (or local `.env.local`) to enable
+Supabase email/password, Google, and Apple sign-in. Without these values, the app stays in
+device-only preview mode. Configure Google and Apple as OAuth providers in Supabase and allow
+your app's `/auth` URL as a redirect destination. Use the provider callback URL shown in the
+Supabase dashboard when configuring Google and Apple. Never put a Supabase service-role key in
+browser code.
