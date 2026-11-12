@@ -9,7 +9,7 @@ import { PLANNER_CROPS, plannerTotals } from "@/lib/calculators";
 import { plantImage } from "@/lib/plant-images";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/tools/planner")({
+export const Route = createFileRoute("/_authenticated/tools/planner")({
   head: () => ({
     meta: [
       { title: "Garden Planner — Sowistry" },

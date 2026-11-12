@@ -16,7 +16,7 @@ import { useGarden } from "@/lib/garden-store";
 import { taskTypeLabel, type TaskType } from "@/lib/tasks";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/calendar")({
+export const Route = createFileRoute("/_authenticated/calendar")({
   head: () => ({
     meta: [
       { title: "Planting Calendar — Sowistry" },

@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Bell,
@@ -6,8 +7,10 @@ import {
   ChevronDown,
   Droplets,
   FlaskConical,
+  Globe,
   LayoutGrid,
   Library,
+  LogOut,
   Menu,
   PlusCircle,
   Search,
@@ -22,6 +25,8 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { auth } from "@/lib/auth";
+import { useAuth } from "@/lib/auth/context";
 import { GUIDES, LIBRARY } from "@/lib/data";
 import { getToday, relativeDayLabel, daysFrom } from "@/lib/dates";
 import { useGarden } from "@/lib/garden-store";
@@ -35,7 +40,7 @@ import { PlantThumb } from "./bits";
 type NavItem = { title: string; to: string; icon: LucideIcon; exact?: boolean };
 
 const NAV: NavItem[] = [
-  { title: "Dashboard", to: "/", icon: LayoutGrid, exact: true },
+  { title: "Dashboard", to: "/dashboard", icon: LayoutGrid, exact: true },
   { title: "My Garden", to: "/garden", icon: Sprout },
   { title: "Plant Library", to: "/library", icon: Library },
   { title: "Planting Calendar", to: "/calendar", icon: CalendarDays },
@@ -73,8 +78,9 @@ function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: (() => void
 }
 
 export function initials(name: string) {
-  return name
-    .split(" ")
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "🌱";
+  return parts
     .map((s) => s[0])
     .join("")
     .slice(0, 2)
@@ -91,7 +97,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: (() => void) | undefined 
   return (
     <div className="flex h-full w-full flex-col px-5 py-6">
       <div className="px-1">
-        <Logo />
+        <Logo to="/dashboard" />
       </div>
 
       <nav className="mt-9 flex-1 space-y-1 overflow-y-auto">
@@ -152,8 +158,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: (() => void) | undefined 
             {initials(settings.name)}
           </span>
           <span className="min-w-0">
-            <span className="block truncate text-sm font-semibold text-primary">{settings.name}</span>
-            <span className="block truncate text-xs text-muted-foreground">Zone {settings.zone} · {settings.location}</span>
+            <span className="block truncate text-sm font-semibold text-primary">{settings.name || "Gardener"}</span>
+            <span className="block truncate text-xs text-muted-foreground">{gardenLine(settings)}</span>
           </span>
         </Link>
         <Button
@@ -292,8 +298,24 @@ function Notifications() {
   );
 }
 
+function gardenLine(s: { zone: string; location: string; email: string }) {
+  const parts = [s.zone && `Zone ${s.zone}`, s.location].filter(Boolean);
+  if (parts.length) return parts.join(" · ");
+  return s.email || "Add your garden location";
+}
+
 function UserMenu() {
   const { settings } = useGarden();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const signOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await auth.signOut();
+    void navigate({ to: "/auth", search: {}, replace: true });
+  };
+  const first = settings.name.split(" ")[0] || "Account";
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -304,13 +326,15 @@ function UserMenu() {
           <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
             {initials(settings.name)}
           </span>
-          <span className="hidden text-sm font-semibold text-primary sm:block">{settings.name.split(" ")[0]}</span>
+          <span className="hidden text-sm font-semibold text-primary sm:block">{first}</span>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 rounded-xl">
         <DropdownMenuLabel>
-          <span className="block text-sm text-primary">{settings.name}</span>
-          <span className="block text-xs font-normal text-muted-foreground">{settings.email}</span>
+          <span className="block text-sm text-primary">{settings.name || "Gardener"}</span>
+          <span className="block truncate text-xs font-normal text-muted-foreground">
+            {user?.email || (auth.kind === "preview" ? "Preview mode · this device only" : "")}
+          </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
@@ -318,6 +342,13 @@ function UserMenu() {
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link to="/garden" search={{}}>My Garden</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/"><Globe /> Sowistry website</Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => void signOut()}>
+          <LogOut /> Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

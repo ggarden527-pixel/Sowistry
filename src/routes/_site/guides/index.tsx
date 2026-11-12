@@ -8,7 +8,7 @@ import { GUIDES, type Guide } from "@/lib/data";
 import { plantImage } from "@/lib/plant-images";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/guides")({
+export const Route = createFileRoute("/_site/guides/")({
   head: () => ({
     meta: [
       { title: "Plant Guides — Sowistry" },

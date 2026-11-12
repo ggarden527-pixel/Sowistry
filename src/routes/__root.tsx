@@ -10,8 +10,8 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
-import { AppShell } from "@/components/app/AppShell";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/lib/auth/context";
 import { GardenProvider } from "@/lib/garden-store";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -81,11 +81,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sowistry — Your garden, beautifully organised" },
-      { name: "description", content: "Sowistry helps you track plants, watering, planting dates and garden tasks in one calm dashboard." },
+      { title: "Sowistry — Grow naturally. Grow confidently." },
+      { name: "description", content: "Gardening tools, plant guides and a personal garden dashboard for watering, planting and care." },
       { name: "author", content: "Sowistry" },
-      { property: "og:title", content: "Sowistry — Your garden, beautifully organised" },
-      { property: "og:description", content: "Track plants, watering, planting dates and garden tasks in one calm dashboard." },
+      { property: "og:site_name", content: "Sowistry" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -129,12 +128,12 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <GardenProvider>
-        <AppShell>
+      <AuthProvider>
+        <GardenProvider>
           <Outlet />
-        </AppShell>
-        <Toaster position="bottom-right" richColors={false} />
-      </GardenProvider>
+          <Toaster position="bottom-right" richColors={false} />
+        </GardenProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

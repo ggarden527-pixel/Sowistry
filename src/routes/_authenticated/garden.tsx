@@ -9,7 +9,7 @@ import { useGarden } from "@/lib/garden-store";
 import { needsWater } from "@/lib/inventory";
 import { plantImage } from "@/lib/plant-images";
 
-export const Route = createFileRoute("/garden")({
+export const Route = createFileRoute("/_authenticated/garden")({
   validateSearch: (search: Record<string, unknown>): { q?: string } => {
     const q = search["q"];
     return typeof q === "string" && q ? { q } : {};

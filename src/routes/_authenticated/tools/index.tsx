@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { TOOLS } from "@/components/app/AppShell";
 import { PageHeader } from "@/components/app/bits";
 
-export const Route = createFileRoute("/tools/")({
+export const Route = createFileRoute("/_authenticated/tools/")({
   head: () => ({
     meta: [
       { title: "Gardening Tools — Sowistry" },

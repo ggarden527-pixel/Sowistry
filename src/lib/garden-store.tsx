@@ -1,10 +1,14 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { toast } from "sonner";
 
+import { useAuth } from "./auth/context";
 import { seedPlants, seedTasks } from "./data";
 import { getToday, toISO } from "./dates";
 import type { Plant } from "./inventory";
+import { gardenRepo, type Profile } from "./repo";
 import type { Task } from "./tasks";
 
+/** What the app shows and edits as "settings": the saved profile plus the account's name and email. */
 export interface Settings {
   name: string;
   email: string;
@@ -16,20 +20,20 @@ export interface Settings {
   weeklyDigest: boolean;
 }
 
-const defaultSettings: Settings = {
-  name: "Amara Khan",
-  email: "amara@sowistry.app",
-  location: "Lahore, Pakistan",
-  zone: "10a",
+export const defaultProfile = (displayName: string): Profile => ({
+  displayName,
+  avatarUrl: null,
+  location: "",
+  zone: "",
   units: "imperial",
   notifyWatering: true,
   notifyPlanting: true,
   weeklyDigest: false,
-};
-
-const STORAGE_KEY = "sowistry:v1";
+});
 
 interface GardenState {
+  /** True once the signed-in user's garden has loaded. */
+  ready: boolean;
   plants: Plant[];
   tasks: Task[];
   settings: Settings;
@@ -39,79 +43,157 @@ interface GardenState {
   toggleTask: (id: string) => void;
   addTask: (t: Omit<Task, "id" | "done">) => void;
   updateSettings: (s: Partial<Settings>) => void;
+  loadSampleGarden: () => void;
   addPlantOpen: boolean;
   setAddPlantOpen: (open: boolean) => void;
 }
 
 const GardenContext = createContext<GardenState | null>(null);
 
-const uid = () => Math.random().toString(36).slice(2, 10);
+const newId = () => crypto.randomUUID();
 
 export function GardenProvider({ children }: { children: ReactNode }) {
-  const [plants, setPlants] = useState<Plant[]>(seedPlants);
-  const [tasks, setTasks] = useState<Task[]>(seedTasks);
-  const [settings, setSettings] = useState<Settings>(defaultSettings);
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
+  const [plants, setPlants] = useState<Plant[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loadedFor, setLoadedFor] = useState<string | null>(null);
   const [addPlantOpen, setAddPlantOpen] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
+
+  // Latest state for callbacks that read before writing (avoids stale closures).
+  const latest = useRef({ plants, tasks });
+  latest.current = { plants, tasks };
 
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const saved = JSON.parse(raw) as Partial<{ plants: Plant[]; tasks: Task[]; settings: Settings }>;
-        if (saved.plants) setPlants(saved.plants);
-        if (saved.tasks) setTasks(saved.tasks);
-        if (saved.settings) setSettings({ ...defaultSettings, ...saved.settings });
-      }
-    } catch {
-      /* ignore corrupt storage */
-    }
-    setHydrated(true);
+    setPlants([]);
+    setTasks([]);
+    setProfile(null);
+    setLoadedFor(null);
+    if (!userId) return;
+    let alive = true;
+    gardenRepo
+      .load(userId)
+      .then((g) => {
+        if (!alive) return;
+        setPlants(g.plants);
+        setTasks(g.tasks);
+        setProfile(g.profile);
+        setLoadedFor(userId);
+      })
+      .catch(() => alive && toast.error("We couldn't load your garden. Please refresh."));
+    return () => {
+      alive = false;
+    };
+  }, [userId]);
+
+  const persist = useCallback((p: Promise<void>) => {
+    p.catch(() => toast.error("That change didn't save. Please try again."));
   }, []);
 
-  useEffect(() => {
-    if (!hydrated) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ plants, tasks, settings }));
-  }, [plants, tasks, settings, hydrated]);
+  const addPlant = useCallback(
+    (p: Omit<Plant, "id">) => {
+      if (!userId) return;
+      const plant = { ...p, id: newId() };
+      setPlants((prev) => [plant, ...prev]);
+      persist(gardenRepo.savePlants(userId, [plant]));
+    },
+    [userId, persist],
+  );
 
-  const addPlant = useCallback((p: Omit<Plant, "id">) => {
-    setPlants((prev) => [{ ...p, id: uid() }, ...prev]);
-  }, []);
-
-  const removePlant = useCallback((id: string) => {
-    setPlants((prev) => prev.filter((p) => p.id !== id));
-  }, []);
+  const removePlant = useCallback(
+    (id: string) => {
+      if (!userId) return;
+      setPlants((prev) => prev.filter((p) => p.id !== id));
+      persist(gardenRepo.deletePlant(userId, id));
+    },
+    [userId, persist],
+  );
 
   const waterPlant = useCallback(
     (id: string) => {
+      if (!userId) return;
       const todayISO = toISO(getToday());
-      const plant = plants.find((p) => p.id === id);
+      const plant = latest.current.plants.find((p) => p.id === id);
       if (!plant) return;
       const keyword = plant.name.split(" ")[0] ?? plant.name;
-      setPlants((prev) => prev.map((p) => (p.id === id ? { ...p, lastWatered: todayISO } : p)));
-      setTasks((prev) =>
-        prev.map((t) =>
-          t.type === "water" && !t.done && t.due <= todayISO && t.title.includes(keyword) ? { ...t, done: true } : t,
-        ),
-      );
+      const watered = { ...plant, lastWatered: todayISO };
+      const closed = latest.current.tasks
+        .filter((t) => t.type === "water" && !t.done && t.due <= todayISO && (t.plantId === id || t.title.includes(keyword)))
+        .map((t) => ({ ...t, done: true }));
+      setPlants((prev) => prev.map((p) => (p.id === id ? watered : p)));
+      if (closed.length) {
+        const ids = new Set(closed.map((t) => t.id));
+        setTasks((prev) => prev.map((t) => (ids.has(t.id) ? { ...t, done: true } : t)));
+        persist(gardenRepo.saveTasks(userId, closed));
+      }
+      persist(gardenRepo.savePlants(userId, [watered]));
     },
-    [plants],
+    [userId, persist],
   );
 
-  const toggleTask = useCallback((id: string) => {
-    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
-  }, []);
+  const toggleTask = useCallback(
+    (id: string) => {
+      if (!userId) return;
+      const task = latest.current.tasks.find((t) => t.id === id);
+      if (!task) return;
+      const next = { ...task, done: !task.done };
+      setTasks((prev) => prev.map((t) => (t.id === id ? next : t)));
+      persist(gardenRepo.saveTasks(userId, [next]));
+    },
+    [userId, persist],
+  );
 
-  const addTask = useCallback((t: Omit<Task, "id" | "done">) => {
-    setTasks((prev) => [...prev, { ...t, id: uid(), done: false }]);
-  }, []);
+  const addTask = useCallback(
+    (t: Omit<Task, "id" | "done">) => {
+      if (!userId) return;
+      const task = { ...t, id: newId(), done: false };
+      setTasks((prev) => [...prev, task]);
+      persist(gardenRepo.saveTasks(userId, [task]));
+    },
+    [userId, persist],
+  );
 
-  const updateSettings = useCallback((s: Partial<Settings>) => {
-    setSettings((prev) => ({ ...prev, ...s }));
-  }, []);
+  const baseProfile = useMemo(() => profile ?? defaultProfile(user?.name ?? ""), [profile, user?.name]);
+
+  const updateSettings = useCallback(
+    (s: Partial<Settings>) => {
+      if (!userId) return;
+      const { name, email: _email, ...rest } = s;
+      const next: Profile = { ...baseProfile, ...rest, ...(name !== undefined ? { displayName: name } : {}) };
+      setProfile(next);
+      persist(gardenRepo.saveProfile(userId, next));
+    },
+    [userId, baseProfile, persist],
+  );
+
+  const loadSampleGarden = useCallback(() => {
+    if (!userId) return;
+    const samplePlants = seedPlants().map((p) => ({ ...p, id: newId() }));
+    const sampleTasks = seedTasks().map((t) => ({ ...t, id: newId() }));
+    setPlants((prev) => [...samplePlants, ...prev]);
+    setTasks((prev) => [...prev, ...sampleTasks]);
+    persist(gardenRepo.savePlants(userId, samplePlants));
+    persist(gardenRepo.saveTasks(userId, sampleTasks));
+  }, [userId, persist]);
+
+  const settings: Settings = useMemo(
+    () => ({
+      name: baseProfile.displayName || user?.name || "",
+      email: user?.email ?? "",
+      location: baseProfile.location,
+      zone: baseProfile.zone,
+      units: baseProfile.units,
+      notifyWatering: baseProfile.notifyWatering,
+      notifyPlanting: baseProfile.notifyPlanting,
+      weeklyDigest: baseProfile.weeklyDigest,
+    }),
+    [baseProfile, user?.name, user?.email],
+  );
 
   const value = useMemo(
     () => ({
+      ready: !!userId && loadedFor === userId,
       plants,
       tasks,
       settings,
@@ -121,10 +203,11 @@ export function GardenProvider({ children }: { children: ReactNode }) {
       toggleTask,
       addTask,
       updateSettings,
+      loadSampleGarden,
       addPlantOpen,
       setAddPlantOpen,
     }),
-    [plants, tasks, settings, addPlant, removePlant, waterPlant, toggleTask, addTask, updateSettings, addPlantOpen],
+    [userId, loadedFor, plants, tasks, settings, addPlant, removePlant, waterPlant, toggleTask, addTask, updateSettings, loadSampleGarden, addPlantOpen],
   );
 
   return <GardenContext.Provider value={value}>{children}</GardenContext.Provider>;

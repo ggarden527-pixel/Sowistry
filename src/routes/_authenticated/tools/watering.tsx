@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChoiceChips, NumberField, ResultRow, ToolLayout } from "@/components/app/ToolLayout";
 import { SOIL_FACTOR, WATER_BASE_IN_PER_WEEK, WEATHER_FACTOR, wateringNeed, type WaterInput } from "@/lib/calculators";
 
-export const Route = createFileRoute("/tools/watering")({
+export const Route = createFileRoute("/_authenticated/tools/watering")({
   head: () => ({
     meta: [
       { title: "Watering Calculator — Sowistry" },

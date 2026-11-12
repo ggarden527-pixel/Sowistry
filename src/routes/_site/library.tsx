@@ -10,7 +10,7 @@ import { useGarden } from "@/lib/garden-store";
 import { plantImage } from "@/lib/plant-images";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/library")({
+export const Route = createFileRoute("/_site/library")({
   head: () => ({
     meta: [
       { title: "Plant Library — Sowistry" },

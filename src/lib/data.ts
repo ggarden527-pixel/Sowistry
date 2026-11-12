@@ -118,6 +118,8 @@ export const LIBRARY: LibraryPlant[] = [
 
 export interface Guide {
   id: string;
+  /** URL segment for the public guide page: /guides/<slug>. Never change once published. */
+  slug: string;
   title: string;
   category: "Watering" | "Soil" | "Seeds" | "Planning" | "Care" | "Seasonal";
   readMins: number;
@@ -129,6 +131,7 @@ export interface Guide {
 export const GUIDES: Guide[] = [
   {
     id: "g1",
+    slug: "watering-101",
     title: "Watering 101: how much is enough?",
     category: "Watering",
     readMins: 5,
@@ -144,6 +147,7 @@ export const GUIDES: Guide[] = [
   },
   {
     id: "g2",
+    slug: "healthy-living-soil",
     title: "Building healthy, living soil",
     category: "Soil",
     readMins: 7,
@@ -159,6 +163,7 @@ export const GUIDES: Guide[] = [
   },
   {
     id: "g3",
+    slug: "starting-seeds-indoors",
     title: "Starting seeds indoors",
     category: "Seeds",
     readMins: 6,
@@ -174,6 +179,7 @@ export const GUIDES: Guide[] = [
   },
   {
     id: "g4",
+    slug: "companion-planting-basics",
     title: "Companion planting basics",
     category: "Planning",
     readMins: 4,
@@ -189,6 +195,7 @@ export const GUIDES: Guide[] = [
   },
   {
     id: "g5",
+    slug: "pruning-herbs",
     title: "Pruning herbs for bushier growth",
     category: "Care",
     readMins: 3,
@@ -203,6 +210,7 @@ export const GUIDES: Guide[] = [
   },
   {
     id: "g6",
+    slug: "preparing-garden-for-winter",
     title: "Preparing your garden for winter",
     category: "Seasonal",
     readMins: 5,

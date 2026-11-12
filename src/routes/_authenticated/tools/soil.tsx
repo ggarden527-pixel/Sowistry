@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChoiceChips, NumberField, ResultRow, ToolLayout } from "@/components/app/ToolLayout";
 import { soilVolume } from "@/lib/calculators";
 
-export const Route = createFileRoute("/tools/soil")({
+export const Route = createFileRoute("/_authenticated/tools/soil")({
   head: () => ({
     meta: [
       { title: "Soil Calculator — Sowistry" },

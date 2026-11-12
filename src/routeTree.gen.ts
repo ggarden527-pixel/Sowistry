@@ -9,264 +9,339 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as CalendarRouteImport } from './routes/calendar'
-import { Route as GardenRouteImport } from './routes/garden'
-import { Route as GuidesRouteImport } from './routes/guides'
-import { Route as LibraryRouteImport } from './routes/library'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as ToolsIndexRouteImport } from './routes/tools.index'
-import { Route as ToolsPlannerRouteImport } from './routes/tools.planner'
-import { Route as ToolsSeedStartingRouteImport } from './routes/tools.seed-starting'
-import { Route as ToolsSoilRouteImport } from './routes/tools.soil'
-import { Route as ToolsWateringRouteImport } from './routes/tools.watering'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as SiteRouteRouteImport } from './routes/_site/route'
+import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedGardenRouteImport } from './routes/_authenticated/garden'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as SiteIndexRouteImport } from './routes/_site/index'
+import { Route as SiteLibraryRouteImport } from './routes/_site/library'
+import { Route as AuthenticatedToolsIndexRouteImport } from './routes/_authenticated/tools/index'
+import { Route as AuthenticatedToolsPlannerRouteImport } from './routes/_authenticated/tools/planner'
+import { Route as AuthenticatedToolsSeedStartingRouteImport } from './routes/_authenticated/tools/seed-starting'
+import { Route as AuthenticatedToolsSoilRouteImport } from './routes/_authenticated/tools/soil'
+import { Route as AuthenticatedToolsWateringRouteImport } from './routes/_authenticated/tools/watering'
+import { Route as SiteGuidesIndexRouteImport } from './routes/_site/guides/index'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CalendarRoute = CalendarRouteImport.update({
+const SiteRouteRoute = SiteRouteRouteImport.update({
+  id: '/_site',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const GardenRoute = GardenRouteImport.update({
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedGardenRoute = AuthenticatedGardenRouteImport.update({
   id: '/garden',
   path: '/garden',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const GuidesRoute = GuidesRouteImport.update({
-  id: '/guides',
-  path: '/guides',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LibraryRoute = LibraryRouteImport.update({
-  id: '/library',
-  path: '/library',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsRoute = SettingsRouteImport.update({
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ToolsIndexRoute = ToolsIndexRouteImport.update({
+const SiteIndexRoute = SiteIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const SiteLibraryRoute = SiteLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => SiteRouteRoute,
+} as any)
+const AuthenticatedToolsIndexRoute = AuthenticatedToolsIndexRouteImport.update({
   id: '/tools/',
   path: '/tools/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ToolsPlannerRoute = ToolsPlannerRouteImport.update({
-  id: '/tools/planner',
-  path: '/tools/planner',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ToolsSeedStartingRoute = ToolsSeedStartingRouteImport.update({
-  id: '/tools/seed-starting',
-  path: '/tools/seed-starting',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ToolsSoilRoute = ToolsSoilRouteImport.update({
+const AuthenticatedToolsPlannerRoute =
+  AuthenticatedToolsPlannerRouteImport.update({
+    id: '/tools/planner',
+    path: '/tools/planner',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedToolsSeedStartingRoute =
+  AuthenticatedToolsSeedStartingRouteImport.update({
+    id: '/tools/seed-starting',
+    path: '/tools/seed-starting',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedToolsSoilRoute = AuthenticatedToolsSoilRouteImport.update({
   id: '/tools/soil',
   path: '/tools/soil',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ToolsWateringRoute = ToolsWateringRouteImport.update({
-  id: '/tools/watering',
-  path: '/tools/watering',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedToolsWateringRoute =
+  AuthenticatedToolsWateringRouteImport.update({
+    id: '/tools/watering',
+    path: '/tools/watering',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const SiteGuidesIndexRoute = SiteGuidesIndexRouteImport.update({
+  id: '/guides/',
+  path: '/guides/',
+  getParentRoute: () => SiteRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/calendar': typeof CalendarRoute
-  '/garden': typeof GardenRoute
-  '/guides': typeof GuidesRoute
-  '/library': typeof LibraryRoute
-  '/settings': typeof SettingsRoute
-  '/tools/planner': typeof ToolsPlannerRoute
-  '/tools/seed-starting': typeof ToolsSeedStartingRoute
-  '/tools/soil': typeof ToolsSoilRoute
-  '/tools/watering': typeof ToolsWateringRoute
-  '/tools/': typeof ToolsIndexRoute
+  '/': typeof SiteIndexRoute
+  '/calendar': typeof AuthenticatedCalendarRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/garden': typeof AuthenticatedGardenRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/library': typeof SiteLibraryRoute
+  '/tools/planner': typeof AuthenticatedToolsPlannerRoute
+  '/tools/seed-starting': typeof AuthenticatedToolsSeedStartingRoute
+  '/tools/soil': typeof AuthenticatedToolsSoilRoute
+  '/tools/watering': typeof AuthenticatedToolsWateringRoute
+  '/tools/': typeof AuthenticatedToolsIndexRoute
+  '/guides/': typeof SiteGuidesIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/calendar': typeof CalendarRoute
-  '/garden': typeof GardenRoute
-  '/guides': typeof GuidesRoute
-  '/library': typeof LibraryRoute
-  '/settings': typeof SettingsRoute
-  '/tools/planner': typeof ToolsPlannerRoute
-  '/tools/seed-starting': typeof ToolsSeedStartingRoute
-  '/tools/soil': typeof ToolsSoilRoute
-  '/tools/watering': typeof ToolsWateringRoute
-  '/tools': typeof ToolsIndexRoute
+  '/': typeof SiteIndexRoute
+  '/calendar': typeof AuthenticatedCalendarRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/garden': typeof AuthenticatedGardenRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/library': typeof SiteLibraryRoute
+  '/tools/planner': typeof AuthenticatedToolsPlannerRoute
+  '/tools/seed-starting': typeof AuthenticatedToolsSeedStartingRoute
+  '/tools/soil': typeof AuthenticatedToolsSoilRoute
+  '/tools/watering': typeof AuthenticatedToolsWateringRoute
+  '/tools': typeof AuthenticatedToolsIndexRoute
+  '/guides': typeof SiteGuidesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/calendar': typeof CalendarRoute
-  '/garden': typeof GardenRoute
-  '/guides': typeof GuidesRoute
-  '/library': typeof LibraryRoute
-  '/settings': typeof SettingsRoute
-  '/tools/planner': typeof ToolsPlannerRoute
-  '/tools/seed-starting': typeof ToolsSeedStartingRoute
-  '/tools/soil': typeof ToolsSoilRoute
-  '/tools/watering': typeof ToolsWateringRoute
-  '/tools/': typeof ToolsIndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_site': typeof SiteRouteRouteWithChildren
+  '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/garden': typeof AuthenticatedGardenRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_site/library': typeof SiteLibraryRoute
+  '/_site/': typeof SiteIndexRoute
+  '/_authenticated/tools/planner': typeof AuthenticatedToolsPlannerRoute
+  '/_authenticated/tools/seed-starting': typeof AuthenticatedToolsSeedStartingRoute
+  '/_authenticated/tools/soil': typeof AuthenticatedToolsSoilRoute
+  '/_authenticated/tools/watering': typeof AuthenticatedToolsWateringRoute
+  '/_authenticated/tools/': typeof AuthenticatedToolsIndexRoute
+  '/_site/guides/': typeof SiteGuidesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/calendar'
+    | '/dashboard'
     | '/garden'
-    | '/guides'
-    | '/library'
     | '/settings'
+    | '/library'
     | '/tools/planner'
     | '/tools/seed-starting'
     | '/tools/soil'
     | '/tools/watering'
     | '/tools/'
+    | '/guides/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/calendar'
+    | '/dashboard'
     | '/garden'
-    | '/guides'
-    | '/library'
     | '/settings'
+    | '/library'
     | '/tools/planner'
     | '/tools/seed-starting'
     | '/tools/soil'
     | '/tools/watering'
     | '/tools'
+    | '/guides'
   id:
     | '__root__'
-    | '/'
-    | '/calendar'
-    | '/garden'
-    | '/guides'
-    | '/library'
-    | '/settings'
-    | '/tools/planner'
-    | '/tools/seed-starting'
-    | '/tools/soil'
-    | '/tools/watering'
-    | '/tools/'
+    | '/_authenticated'
+    | '/_site'
+    | '/_authenticated/calendar'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/garden'
+    | '/_authenticated/settings'
+    | '/_site/library'
+    | '/_site/'
+    | '/_authenticated/tools/planner'
+    | '/_authenticated/tools/seed-starting'
+    | '/_authenticated/tools/soil'
+    | '/_authenticated/tools/watering'
+    | '/_authenticated/tools/'
+    | '/_site/guides/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  CalendarRoute: typeof CalendarRoute
-  GardenRoute: typeof GardenRoute
-  GuidesRoute: typeof GuidesRoute
-  LibraryRoute: typeof LibraryRoute
-  SettingsRoute: typeof SettingsRoute
-  ToolsPlannerRoute: typeof ToolsPlannerRoute
-  ToolsSeedStartingRoute: typeof ToolsSeedStartingRoute
-  ToolsSoilRoute: typeof ToolsSoilRoute
-  ToolsWateringRoute: typeof ToolsWateringRoute
-  ToolsIndexRoute: typeof ToolsIndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  SiteRouteRoute: typeof SiteRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/calendar': {
-      id: '/calendar'
+    '/_site': {
+      id: '/_site'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof SiteRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/calendar': {
+      id: '/_authenticated/calendar'
       path: '/calendar'
       fullPath: '/calendar'
-      preLoaderRoute: typeof CalendarRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedCalendarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/garden': {
-      id: '/garden'
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/garden': {
+      id: '/_authenticated/garden'
       path: '/garden'
       fullPath: '/garden'
-      preLoaderRoute: typeof GardenRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedGardenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/guides': {
-      id: '/guides'
-      path: '/guides'
-      fullPath: '/guides'
-      preLoaderRoute: typeof GuidesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/library': {
-      id: '/library'
-      path: '/library'
-      fullPath: '/library'
-      preLoaderRoute: typeof LibraryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings': {
-      id: '/settings'
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
       path: '/settings'
       fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/tools/': {
-      id: '/tools/'
+    '/_site/': {
+      id: '/_site/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof SiteIndexRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_site/library': {
+      id: '/_site/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof SiteLibraryRouteImport
+      parentRoute: typeof SiteRouteRoute
+    }
+    '/_authenticated/tools/': {
+      id: '/_authenticated/tools/'
       path: '/tools'
       fullPath: '/tools/'
-      preLoaderRoute: typeof ToolsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedToolsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/tools/planner': {
-      id: '/tools/planner'
+    '/_authenticated/tools/planner': {
+      id: '/_authenticated/tools/planner'
       path: '/tools/planner'
       fullPath: '/tools/planner'
-      preLoaderRoute: typeof ToolsPlannerRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedToolsPlannerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/tools/seed-starting': {
-      id: '/tools/seed-starting'
+    '/_authenticated/tools/seed-starting': {
+      id: '/_authenticated/tools/seed-starting'
       path: '/tools/seed-starting'
       fullPath: '/tools/seed-starting'
-      preLoaderRoute: typeof ToolsSeedStartingRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedToolsSeedStartingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/tools/soil': {
-      id: '/tools/soil'
+    '/_authenticated/tools/soil': {
+      id: '/_authenticated/tools/soil'
       path: '/tools/soil'
       fullPath: '/tools/soil'
-      preLoaderRoute: typeof ToolsSoilRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedToolsSoilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/tools/watering': {
-      id: '/tools/watering'
+    '/_authenticated/tools/watering': {
+      id: '/_authenticated/tools/watering'
       path: '/tools/watering'
       fullPath: '/tools/watering'
-      preLoaderRoute: typeof ToolsWateringRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedToolsWateringRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_site/guides/': {
+      id: '/_site/guides/'
+      path: '/guides'
+      fullPath: '/guides/'
+      preLoaderRoute: typeof SiteGuidesIndexRouteImport
+      parentRoute: typeof SiteRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedGardenRoute: typeof AuthenticatedGardenRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedToolsPlannerRoute: typeof AuthenticatedToolsPlannerRoute
+  AuthenticatedToolsSeedStartingRoute: typeof AuthenticatedToolsSeedStartingRoute
+  AuthenticatedToolsSoilRoute: typeof AuthenticatedToolsSoilRoute
+  AuthenticatedToolsWateringRoute: typeof AuthenticatedToolsWateringRoute
+  AuthenticatedToolsIndexRoute: typeof AuthenticatedToolsIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedGardenRoute: AuthenticatedGardenRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedToolsPlannerRoute: AuthenticatedToolsPlannerRoute,
+  AuthenticatedToolsSeedStartingRoute: AuthenticatedToolsSeedStartingRoute,
+  AuthenticatedToolsSoilRoute: AuthenticatedToolsSoilRoute,
+  AuthenticatedToolsWateringRoute: AuthenticatedToolsWateringRoute,
+  AuthenticatedToolsIndexRoute: AuthenticatedToolsIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface SiteRouteRouteChildren {
+  SiteLibraryRoute: typeof SiteLibraryRoute
+  SiteIndexRoute: typeof SiteIndexRoute
+  SiteGuidesIndexRoute: typeof SiteGuidesIndexRoute
+}
+
+const SiteRouteRouteChildren: SiteRouteRouteChildren = {
+  SiteLibraryRoute: SiteLibraryRoute,
+  SiteIndexRoute: SiteIndexRoute,
+  SiteGuidesIndexRoute: SiteGuidesIndexRoute,
+}
+
+const SiteRouteRouteWithChildren = SiteRouteRoute._addFileChildren(
+  SiteRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  CalendarRoute: CalendarRoute,
-  GardenRoute: GardenRoute,
-  GuidesRoute: GuidesRoute,
-  LibraryRoute: LibraryRoute,
-  SettingsRoute: SettingsRoute,
-  ToolsPlannerRoute: ToolsPlannerRoute,
-  ToolsSeedStartingRoute: ToolsSeedStartingRoute,
-  ToolsSoilRoute: ToolsSoilRoute,
-  ToolsWateringRoute: ToolsWateringRoute,
-  ToolsIndexRoute: ToolsIndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  SiteRouteRoute: SiteRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

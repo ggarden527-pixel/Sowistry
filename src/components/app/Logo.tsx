@@ -2,9 +2,9 @@ import { Link } from "@tanstack/react-router";
 
 import emblem from "@/assets/sowistry-emblem.png.asset.json";
 
-export function Logo() {
+export function Logo({ to = "/" }: { to?: "/" | "/dashboard" }) {
   return (
-    <Link to="/" className="flex items-center gap-3">
+    <Link to={to} className="flex items-center gap-3">
       <img src={emblem.url} alt="" width={44} height={44} className="h-11 w-11 shrink-0 rounded-xl border border-border bg-card p-0.5" />
       <span className="min-w-0 leading-tight">
         <span className="block font-display text-[1.375rem] font-bold text-primary">Sowistry</span>

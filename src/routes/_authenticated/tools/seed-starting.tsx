@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SEED_CROPS, seedSchedule } from "@/lib/calculators";
 
-export const Route = createFileRoute("/tools/seed-starting")({
+export const Route = createFileRoute("/_authenticated/tools/seed-starting")({
   head: () => ({
     meta: [
       { title: "Seed Starting Calculator — Sowistry" },

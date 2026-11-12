@@ -10,7 +10,7 @@ import { daysFrom, getToday } from "@/lib/dates";
 import { useGarden } from "@/lib/garden-store";
 import { gardenHealthScore, needsWater } from "@/lib/inventory";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "Garden Dashboard — Sowistry" },
