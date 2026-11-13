@@ -2,7 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getRouterInstance } from "@tanstack/react-start";
 
 import { GUIDES } from "@/lib/data";
-import { sitemapPathForLocation, sitemapStaticPaths, sitemapXML, isSitemapRouteIncluded, type SitemapEntry } from "@/lib/sitemap";
+import {
+  sitemapPathForLocation,
+  sitemapStaticPaths,
+  sitemapXML,
+  isSitemapRouteIncluded,
+  type SitemapEntry,
+} from "@/lib/sitemap";
 
 const BASE_URL = "https://sowistry.lovable.app";
 

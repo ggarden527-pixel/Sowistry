@@ -11,7 +11,8 @@ export interface SoilInput {
 }
 
 export function soilVolume({ lengthFt, widthFt, depthIn, beds, bagCuFt }: SoilInput) {
-  const cubicFeet = Math.max(0, lengthFt) * Math.max(0, widthFt) * (Math.max(0, depthIn) / 12) * Math.max(0, beds);
+  const cubicFeet =
+    Math.max(0, lengthFt) * Math.max(0, widthFt) * (Math.max(0, depthIn) / 12) * Math.max(0, beds);
   return {
     cubicFeet,
     cubicYards: cubicFeet / 27,
@@ -33,16 +34,41 @@ export const SEED_CROPS: SeedCrop[] = [
   { name: "Tomato", sowWeeksBeforeFrost: 7, transplantWeeksAfterFrost: 1, germinationDays: "5–10" },
   { name: "Pepper", sowWeeksBeforeFrost: 9, transplantWeeksAfterFrost: 2, germinationDays: "7–14" },
   { name: "Basil", sowWeeksBeforeFrost: 6, transplantWeeksAfterFrost: 1, germinationDays: "5–10" },
-  { name: "Lettuce", sowWeeksBeforeFrost: 5, transplantWeeksAfterFrost: -2, germinationDays: "2–8" },
-  { name: "Broccoli", sowWeeksBeforeFrost: 6, transplantWeeksAfterFrost: -2, germinationDays: "4–7" },
-  { name: "Cucumber", sowWeeksBeforeFrost: 3, transplantWeeksAfterFrost: 2, germinationDays: "3–10" },
-  { name: "Marigold", sowWeeksBeforeFrost: 6, transplantWeeksAfterFrost: 0, germinationDays: "4–14" },
+  {
+    name: "Lettuce",
+    sowWeeksBeforeFrost: 5,
+    transplantWeeksAfterFrost: -2,
+    germinationDays: "2–8",
+  },
+  {
+    name: "Broccoli",
+    sowWeeksBeforeFrost: 6,
+    transplantWeeksAfterFrost: -2,
+    germinationDays: "4–7",
+  },
+  {
+    name: "Cucumber",
+    sowWeeksBeforeFrost: 3,
+    transplantWeeksAfterFrost: 2,
+    germinationDays: "3–10",
+  },
+  {
+    name: "Marigold",
+    sowWeeksBeforeFrost: 6,
+    transplantWeeksAfterFrost: 0,
+    germinationDays: "4–14",
+  },
   { name: "Kale", sowWeeksBeforeFrost: 5, transplantWeeksAfterFrost: -3, germinationDays: "5–8" },
 ];
 
 const DAY_MS = 86_400_000;
 
-export function seedSchedule(lastFrost: Date, crop: SeedCrop, plantsWanted: number, germinationRatePct: number) {
+export function seedSchedule(
+  lastFrost: Date,
+  crop: SeedCrop,
+  plantsWanted: number,
+  germinationRatePct: number,
+) {
   const sowIndoors = new Date(lastFrost.getTime() - crop.sowWeeksBeforeFrost * 7 * DAY_MS);
   const transplant = new Date(lastFrost.getTime() + crop.transplantWeeksAfterFrost * 7 * DAY_MS);
   const rate = Math.min(100, Math.max(1, germinationRatePct)) / 100;
@@ -72,7 +98,8 @@ export interface WaterInput {
 }
 
 export function wateringNeed({ plantType, weather, soil, areaSqFt, rainfallIn }: WaterInput) {
-  const targetInches = WATER_BASE_IN_PER_WEEK[plantType] * WEATHER_FACTOR[weather] * SOIL_FACTOR[soil];
+  const targetInches =
+    WATER_BASE_IN_PER_WEEK[plantType] * WEATHER_FACTOR[weather] * SOIL_FACTOR[soil];
   const inchesToAdd = Math.max(0, targetInches - Math.max(0, rainfallIn));
   const gallonsPerWeek = inchesToAdd * Math.max(0, areaSqFt) * GALLONS_PER_SQFT_INCH;
   const sessions = SESSIONS_PER_WEEK[soil];

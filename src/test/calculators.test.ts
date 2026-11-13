@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { plannerTotals, seedSchedule, SEED_CROPS, soilVolume, wateringNeed } from "@/lib/calculators";
+import {
+  plannerTotals,
+  seedSchedule,
+  SEED_CROPS,
+  soilVolume,
+  wateringNeed,
+} from "@/lib/calculators";
 
 describe("soil calculator", () => {
   it("fills one 4×8 ft bed, 12 in deep, with 32 cu ft = 16 bags of 2 cu ft", () => {
@@ -32,14 +38,28 @@ describe("seed starting calculator", () => {
 
 describe("watering calculator", () => {
   it("subtracts rainfall and converts inches to gallons", () => {
-    const r = wateringNeed({ plantType: "Vegetables", weather: "Mild", soil: "Loam", areaSqFt: 100, rainfallIn: 0.5 });
+    const r = wateringNeed({
+      plantType: "Vegetables",
+      weather: "Mild",
+      soil: "Loam",
+      areaSqFt: 100,
+      rainfallIn: 0.5,
+    });
     expect(r.inchesToAdd).toBeCloseTo(0.5);
     expect(r.gallonsPerWeek).toBeCloseTo(31.15, 2);
     expect(r.sessions).toBe(2);
   });
 
   it("needs no extra water when rain covers the target", () => {
-    expect(wateringNeed({ plantType: "Succulents", weather: "Cool", soil: "Clay", areaSqFt: 50, rainfallIn: 1 }).gallonsPerWeek).toBe(0);
+    expect(
+      wateringNeed({
+        plantType: "Succulents",
+        weather: "Cool",
+        soil: "Clay",
+        areaSqFt: 50,
+        rainfallIn: 1,
+      }).gallonsPerWeek,
+    ).toBe(0);
   });
 });
 

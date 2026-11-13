@@ -13,27 +13,48 @@ export function SiteFooter() {
         <div className="max-w-xs space-y-4">
           <Logo />
           <p className="text-sm leading-relaxed text-muted-foreground">
-            Practical tools and friendly guides for home gardeners — from your first pot of basil to a full kitchen garden.
+            Practical tools and friendly guides for home gardeners — from your first pot of basil to
+            a full kitchen garden.
           </p>
         </div>
         <div className={col}>
           <p className={head}>Tools</p>
-          <Link to="/tools/soil" className={item}>Soil Calculator</Link>
-          <Link to="/tools/seed-starting" className={item}>Seed Starting</Link>
-          <Link to="/tools/watering" className={item}>Watering Calculator</Link>
-          <Link to="/tools/planner" className={item}>Garden Planner</Link>
+          <Link to="/tools/soil" className={item}>
+            Soil Calculator
+          </Link>
+          <Link to="/tools/seed-starting" className={item}>
+            Seed Starting
+          </Link>
+          <Link to="/tools/watering" className={item}>
+            Watering Calculator
+          </Link>
+          <Link to="/tools/planner" className={item}>
+            Garden Planner
+          </Link>
         </div>
         <div className={col}>
           <p className={head}>Learn</p>
-          <Link to="/library" className={item}>Plant Library</Link>
-          <Link to="/guides" className={item}>Plant Guides</Link>
-          <Link to="/" hash="seasonal" className={item}>Seasonal advice</Link>
+          <Link to="/library" className={item}>
+            Plant Library
+          </Link>
+          <Link to="/guides" className={item}>
+            Plant Guides
+          </Link>
+          <Link to="/" hash="seasonal" className={item}>
+            Seasonal advice
+          </Link>
         </div>
         <div className={col}>
           <p className={head}>Account</p>
-          <Link to="/auth" search={{}} className={item}>Sign in</Link>
-          <Link to="/auth" search={{ mode: "signup" }} className={item}>Create a free account</Link>
-          <Link to="/dashboard" className={item}>My dashboard</Link>
+          <Link to="/auth" search={{}} className={item}>
+            Sign in
+          </Link>
+          <Link to="/auth" search={{ mode: "signup" }} className={item}>
+            Create a free account
+          </Link>
+          <Link to="/dashboard" className={item}>
+            My dashboard
+          </Link>
         </div>
       </div>
       <div className="border-t border-border">

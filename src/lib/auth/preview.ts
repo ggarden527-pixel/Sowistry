@@ -56,7 +56,12 @@ export const previewAuth: AuthBackend = {
     emit(null);
   },
   async startPreviewSession(name: string) {
-    const user: AuthUser = { id: deviceId(), email: "", name: name.trim() || "Gardener", avatarUrl: null };
+    const user: AuthUser = {
+      id: deviceId(),
+      email: "",
+      name: name.trim() || "Gardener",
+      avatarUrl: null,
+    };
     window.localStorage.setItem(SESSION_KEY, JSON.stringify(user));
     emit(user);
   },

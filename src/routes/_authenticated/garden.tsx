@@ -18,9 +18,16 @@ export const Route = createFileRoute("/_authenticated/garden")({
   head: () => ({
     meta: [
       { title: "My Garden — Sowistry" },
-      { name: "description", content: "Your full plant inventory with watering, sunlight, fertilizer schedules and health status." },
+      {
+        name: "description",
+        content:
+          "Your full plant inventory with watering, sunlight, fertilizer schedules and health status.",
+      },
       { property: "og:title", content: "My Garden — Sowistry" },
-      { property: "og:description", content: "Your full plant inventory with watering and feeding schedules." },
+      {
+        property: "og:description",
+        content: "Your full plant inventory with watering and feeding schedules.",
+      },
     ],
   }),
   component: GardenPage,
@@ -52,7 +59,13 @@ function GardenPage() {
           <div key={s.loc} className="surface flex items-center gap-3 p-4">
             <div className="flex shrink-0 -space-x-3">
               {s.list.slice(0, 3).map((p) => (
-                <img key={p.id} src={plantImage(p.imageKey)} alt="" loading="lazy" className="h-10 w-10 rounded-full border-2 border-card object-cover" />
+                <img
+                  key={p.id}
+                  src={plantImage(p.imageKey)}
+                  alt=""
+                  loading="lazy"
+                  className="h-10 w-10 rounded-full border-2 border-card object-cover"
+                />
               ))}
             </div>
             <div className="min-w-0">
@@ -61,7 +74,12 @@ function GardenPage() {
               </p>
               <p className="text-xs text-muted-foreground">
                 {s.list.length} plant{s.list.length > 1 ? "s" : ""}
-                {s.thirsty > 0 && <> · <span className="font-semibold text-water">{s.thirsty} thirsty</span></>}
+                {s.thirsty > 0 && (
+                  <>
+                    {" "}
+                    · <span className="font-semibold text-water">{s.thirsty} thirsty</span>
+                  </>
+                )}
               </p>
             </div>
           </div>

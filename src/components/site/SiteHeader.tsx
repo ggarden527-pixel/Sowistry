@@ -7,25 +7,55 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/lib/auth/context";
 
-const navLink = "rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-primary";
+const navLink =
+  "rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-primary";
 const navActive = "text-primary font-semibold";
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <>
-      <Link to="/" hash="tools" onClick={onNavigate} className={navLink}>Tools</Link>
-      <Link to="/library" onClick={onNavigate} className={navLink} activeProps={{ className: navActive }}>Plant Library</Link>
-      <Link to="/guides" onClick={onNavigate} className={navLink} activeProps={{ className: navActive }}>Plant Guides</Link>
-      <Link to="/" hash="seasonal" onClick={onNavigate} className={navLink}>Seasonal advice</Link>
+      <Link to="/" hash="tools" onClick={onNavigate} className={navLink}>
+        Tools
+      </Link>
+      <Link
+        to="/library"
+        onClick={onNavigate}
+        className={navLink}
+        activeProps={{ className: navActive }}
+      >
+        Plant Library
+      </Link>
+      <Link
+        to="/guides"
+        onClick={onNavigate}
+        className={navLink}
+        activeProps={{ className: navActive }}
+      >
+        Plant Guides
+      </Link>
+      <Link to="/" hash="seasonal" onClick={onNavigate} className={navLink}>
+        Seasonal advice
+      </Link>
     </>
   );
 }
 
-function AccountButtons({ onNavigate, stacked = false }: { onNavigate?: () => void; stacked?: boolean }) {
+function AccountButtons({
+  onNavigate,
+  stacked = false,
+}: {
+  onNavigate?: () => void;
+  stacked?: boolean;
+}) {
   const { user } = useAuth();
   if (user) {
     return (
-      <Button asChild variant="leaf" size={stacked ? "lg" : "default"} className={stacked ? "w-full" : ""}>
+      <Button
+        asChild
+        variant="leaf"
+        size={stacked ? "lg" : "default"}
+        className={stacked ? "w-full" : ""}
+      >
         <Link to="/dashboard" onClick={onNavigate}>
           Open dashboard <ArrowRight />
         </Link>
@@ -35,10 +65,14 @@ function AccountButtons({ onNavigate, stacked = false }: { onNavigate?: () => vo
   return (
     <div className={stacked ? "grid gap-2" : "flex items-center gap-2"}>
       <Button asChild variant="ghost" size={stacked ? "lg" : "default"}>
-        <Link to="/auth" search={{}} onClick={onNavigate}>Sign in</Link>
+        <Link to="/auth" search={{}} onClick={onNavigate}>
+          Sign in
+        </Link>
       </Button>
       <Button asChild variant="leaf" size={stacked ? "lg" : "default"}>
-        <Link to="/auth" search={{ mode: "signup" }} onClick={onNavigate}>Get started</Link>
+        <Link to="/auth" search={{ mode: "signup" }} onClick={onNavigate}>
+          Get started
+        </Link>
       </Button>
     </div>
   );

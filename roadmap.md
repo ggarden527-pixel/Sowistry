@@ -1,6 +1,7 @@
 # Sowistry roadmap
 
 ## Public site + private dashboard
+
 - [ ] Public homepage at / (hero, tools, featured guides, seasonal advice, newsletter, footer)
 - [ ] Public, indexable Plant Library and Plant Guides (guide detail pages, sitemap, robots, canonical tags)
 - [ ] Dashboard moved to /dashboard; garden, calendar, tools, planner, settings behind sign-in

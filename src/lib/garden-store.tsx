@@ -1,4 +1,13 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { toast } from "sonner";
 
 import { useAuth } from "./auth/context";
@@ -95,19 +104,14 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     };
   }, [userId]);
 
-  const persist = useCallback(
-    (p: Promise<void>) => {
-      p.catch((error: unknown) =>
-        toast.error("That change didn't save.", {
-          description:
-            error instanceof Error
-              ? error.message
-              : "Check your database connection and try again.",
-        }),
-      );
-    },
-    [],
-  );
+  const persist = useCallback((p: Promise<void>) => {
+    p.catch((error: unknown) =>
+      toast.error("That change didn't save.", {
+        description:
+          error instanceof Error ? error.message : "Check your database connection and try again.",
+      }),
+    );
+  }, []);
 
   const addPlant = useCallback(
     (p: Omit<Plant, "id">) => {
@@ -137,7 +141,13 @@ export function GardenProvider({ children }: { children: ReactNode }) {
       const keyword = plant.name.split(" ")[0] ?? plant.name;
       const watered = { ...plant, lastWatered: todayISO };
       const closed = latest.current.tasks
-        .filter((t) => t.type === "water" && !t.done && t.due <= todayISO && (t.plantId === id || t.title.includes(keyword)))
+        .filter(
+          (t) =>
+            t.type === "water" &&
+            !t.done &&
+            t.due <= todayISO &&
+            (t.plantId === id || t.title.includes(keyword)),
+        )
         .map((t) => ({ ...t, done: true }));
       setPlants((prev) => prev.map((p) => (p.id === id ? watered : p)));
       if (closed.length) {
@@ -172,13 +182,20 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     [userId, persist],
   );
 
-  const baseProfile = useMemo(() => profile ?? defaultProfile(user?.name ?? ""), [profile, user?.name]);
+  const baseProfile = useMemo(
+    () => profile ?? defaultProfile(user?.name ?? ""),
+    [profile, user?.name],
+  );
 
   const updateSettings = useCallback(
     (s: Partial<Settings>) => {
       if (!userId) return;
       const { name, email: _email, ...rest } = s;
-      const next: Profile = { ...baseProfile, ...rest, ...(name !== undefined ? { displayName: name } : {}) };
+      const next: Profile = {
+        ...baseProfile,
+        ...rest,
+        ...(name !== undefined ? { displayName: name } : {}),
+      };
       setProfile(next);
       persist(gardenRepo.saveProfile(userId, next));
     },
@@ -225,7 +242,21 @@ export function GardenProvider({ children }: { children: ReactNode }) {
       addPlantOpen,
       setAddPlantOpen,
     }),
-    [userId, loadedFor, plants, tasks, settings, addPlant, removePlant, waterPlant, toggleTask, addTask, updateSettings, loadSampleGarden, addPlantOpen],
+    [
+      userId,
+      loadedFor,
+      plants,
+      tasks,
+      settings,
+      addPlant,
+      removePlant,
+      waterPlant,
+      toggleTask,
+      addTask,
+      updateSettings,
+      loadSampleGarden,
+      addPlantOpen,
+    ],
   );
 
   return <GardenContext.Provider value={value}>{children}</GardenContext.Provider>;
