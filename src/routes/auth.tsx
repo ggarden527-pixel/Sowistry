@@ -2,6 +2,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { Logo } from "@/components/app/Logo";
+import { AppleIcon, GoogleIcon } from "@/components/auth/ProviderIcons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +12,7 @@ import { useAuth } from "@/lib/auth/context";
 type Search = { mode?: "signin" | "signup"; redirect?: string };
 
 export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: false },
   validateSearch: (s: Record<string, unknown>): Search => ({
     ...(s["mode"] === "signup" || s["mode"] === "signin" ? { mode: s["mode"] } : {}),
     ...(typeof s["redirect"] === "string" ? { redirect: s["redirect"] } : {}),
@@ -35,7 +37,7 @@ function AuthPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ text: string; tone: "error" | "info" } | null>(null);
   const [busy, setBusy] = useState(false);
   const dest = safeRedirect(search.redirect);
 
@@ -49,7 +51,7 @@ function AuthPage() {
     try {
       await fn();
     } catch (e) {
-      setMessage(e instanceof Error ? e.message : "Something went wrong. Please try again.");
+      setMessage({ text: e instanceof Error ? e.message : "Something went wrong. Please try again.", tone: "error" });
     } finally {
       setBusy(false);
     }
@@ -60,7 +62,18 @@ function AuthPage() {
     void run(async () => {
       if (mode === "signin") return auth.signInWithPassword(email.trim(), password);
       const r = await auth.signUp({ email: email.trim(), password, name: name.trim() });
-      if (r.needsEmailConfirmation) setMessage("Check your email to confirm your account.");
+      if (r.needsEmailConfirmation) setMessage({ text: "Check your email to confirm your account, then sign in.", tone: "info" });
+    });
+  };
+  const forgot = () => {
+    const value = email.trim();
+    if (!value) {
+      setMessage({ text: "Enter your email above, then tap “Forgot password?” again.", tone: "error" });
+      return;
+    }
+    void run(async () => {
+      await auth.sendPasswordReset(value);
+      setMessage({ text: `If ${value} has an account, a reset link is on its way.`, tone: "info" });
     });
   };
   const oauth = (p: OAuthProvider) => {
@@ -90,8 +103,12 @@ function AuthPage() {
         )}
 
         <div className="mt-6 grid gap-2">
-          <Button type="button" variant="outline" size="lg" disabled={busy} onClick={() => oauth("google")}>Continue with Google</Button>
-          <Button type="button" variant="outline" size="lg" disabled={busy} onClick={() => oauth("apple")}>Continue with Apple</Button>
+          <Button type="button" variant="outline" size="lg" disabled={busy} onClick={() => oauth("google")}>
+            <GoogleIcon className="h-5 w-5" /> Continue with Google
+          </Button>
+          <Button type="button" variant="outline" size="lg" disabled={busy} onClick={() => oauth("apple")}>
+            <AppleIcon className="h-5 w-5" /> Continue with Apple
+          </Button>
         </div>
 
         <form onSubmit={submit} className="mt-6 space-y-4">
@@ -106,15 +123,27 @@ function AuthPage() {
             <Input id="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Password</Label>
+              {mode === "signin" && auth.kind === "supabase" && (
+                <button type="button" className="text-xs font-semibold text-leaf hover:underline" onClick={forgot} disabled={busy}>
+                  Forgot password?
+                </button>
+              )}
+            </div>
             <Input id="password" type="password" required minLength={8} autoComplete={mode === "signin" ? "current-password" : "new-password"} value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
-          {message && <p role="status" className="text-sm text-destructive">{message}</p>}
+          {message && (
+            <p role="status" className={message.tone === "error" ? "text-sm text-destructive" : "text-sm text-primary"}>{message.text}</p>
+          )}
           <Button type="submit" variant="leaf" size="lg" className="w-full" disabled={busy}>
             {mode === "signin" ? "Sign in" : "Create account"}
           </Button>
         </form>
-        <button type="button" className="mt-4 text-sm font-semibold text-leaf hover:underline" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}>
+        <button type="button" className="mt-4 text-sm font-semibold text-leaf hover:underline" onClick={() => {
+          setMessage(null);
+          setMode(mode === "signin" ? "signup" : "signin");
+        }}>
           {mode === "signin" ? "New to Sowistry? Create an account" : "Already have an account? Sign in"}
         </button>
       </div>

@@ -1,4 +1,7 @@
-import { createClient, type SupabaseClient, type User } from "@supabase/supabase-js";
+import type { SupabaseClient, User } from "@supabase/supabase-js";
+
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
 import type { AuthBackend, AuthUser, OAuthProvider } from "./types";
 
@@ -22,7 +25,8 @@ function mapUser(user: User | null): AuthUser | null {
   };
 }
 
-export function createSupabaseAuth(client: SupabaseClient): AuthBackend {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function createSupabaseAuth(client: SupabaseClient<any>): AuthBackend {
   return {
     kind: "supabase",
     async getUser() {
@@ -61,7 +65,7 @@ export function createSupabaseAuth(client: SupabaseClient): AuthBackend {
     },
     async sendPasswordReset(email) {
       const { error } = await client.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth?mode=signin`,
+        redirectTo: `${window.location.origin}/reset-password`,
       });
       if (error) throw error;
     },
@@ -81,20 +85,9 @@ const supabaseKey =
   import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]?.trim() ||
   import.meta.env["VITE_SUPABASE_ANON_KEY"]?.trim();
 
-if (Boolean(supabaseUrl) !== Boolean(supabaseKey)) {
-  throw new Error("Configure both VITE_SUPABASE_URL and a Supabase publishable/anon key.");
-}
-
-export const supabaseClient: SupabaseClient | null =
-  supabaseUrl && supabaseKey
-    ? createClient(supabaseUrl, supabaseKey, {
-        auth: {
-          autoRefreshToken: true,
-          persistSession: true,
-          detectSessionInUrl: true,
-        },
-      })
-    : null;
+/** The project's one Supabase client (shared with storage), or null when no project is connected. */
+export const supabaseClient: SupabaseClient<Database> | null =
+  supabaseUrl && supabaseKey ? supabase : null;
 
 export const supabaseAuth: AuthBackend | null = supabaseClient
   ? createSupabaseAuth(supabaseClient)

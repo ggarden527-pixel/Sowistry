@@ -28,6 +28,7 @@ const DESCRIPTION =
   "Grow with confidence: free plant guides, a plant library, soil, seed and watering calculators, and a personal garden dashboard with care reminders.";
 
 export const Route = createFileRoute("/_site/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: TITLE },

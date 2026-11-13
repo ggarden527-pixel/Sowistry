@@ -17,6 +17,7 @@ import { taskTypeLabel, type TaskType } from "@/lib/tasks";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Planting Calendar — Sowistry" },

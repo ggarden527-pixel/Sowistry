@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { useGarden, type Settings } from "@/lib/garden-store";
 
 export const Route = createFileRoute("/_authenticated/settings")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Settings — Sowistry" },
@@ -89,7 +90,8 @@ function SettingsPage() {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={form.email} onChange={(e) => set("email", e.target.value)} className="h-11" />
+              <Input id="email" type="email" value={form.email} readOnly aria-describedby="email-hint" className="h-11 bg-muted text-muted-foreground" />
+              <p id="email-hint" className="text-xs text-muted-foreground">This is the email you sign in with.</p>
             </div>
           </div>
         </Section>

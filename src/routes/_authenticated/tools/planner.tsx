@@ -13,6 +13,7 @@ import { gardenRepo } from "@/lib/repo";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/tools/planner")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Garden Planner — Sowistry" },

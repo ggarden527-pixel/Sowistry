@@ -14,7 +14,186 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      newsletter_subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      planner_beds: {
+        Row: {
+          cells: Json
+          cols: number
+          created_at: string
+          rows: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cells?: Json
+          cols: number
+          created_at?: string
+          rows: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cells?: Json
+          cols?: number
+          created_at?: string
+          rows?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      plants: {
+        Row: {
+          created_at: string
+          fertilize_every_days: number
+          health: string
+          id: string
+          image_key: string
+          last_fertilized: string
+          last_watered: string
+          location: string
+          name: string
+          species: string
+          sunlight: string
+          updated_at: string
+          user_id: string
+          water_every_days: number
+        }
+        Insert: {
+          created_at?: string
+          fertilize_every_days: number
+          health: string
+          id: string
+          image_key?: string
+          last_fertilized: string
+          last_watered: string
+          location?: string
+          name: string
+          species?: string
+          sunlight: string
+          updated_at?: string
+          user_id: string
+          water_every_days: number
+        }
+        Update: {
+          created_at?: string
+          fertilize_every_days?: number
+          health?: string
+          id?: string
+          image_key?: string
+          last_fertilized?: string
+          last_watered?: string
+          location?: string
+          name?: string
+          species?: string
+          sunlight?: string
+          updated_at?: string
+          user_id?: string
+          water_every_days?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string
+          id: string
+          location: string
+          notify_planting: boolean
+          notify_watering: boolean
+          units: string
+          updated_at: string
+          weekly_digest: boolean
+          zone: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          id: string
+          location?: string
+          notify_planting?: boolean
+          notify_watering?: boolean
+          units?: string
+          updated_at?: string
+          weekly_digest?: boolean
+          zone?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          location?: string
+          notify_planting?: boolean
+          notify_watering?: boolean
+          units?: string
+          updated_at?: string
+          weekly_digest?: boolean
+          zone?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          created_at: string
+          done: boolean
+          due: string
+          id: string
+          image_key: string | null
+          plant_id: string | null
+          time: string | null
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          done?: boolean
+          due: string
+          id: string
+          image_key?: string | null
+          plant_id?: string | null
+          time?: string | null
+          title: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          done?: boolean
+          due?: string
+          id?: string
+          image_key?: string | null
+          plant_id?: string | null
+          time?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

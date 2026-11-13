@@ -7,6 +7,7 @@ import { plantImage } from "@/lib/plant-images";
 const SITE = "https://sowistry.lovable.app";
 
 export const Route = createFileRoute("/_site/guides/$slug")({
+  staticData: { sitemap: true },
   loader: ({ params }) => {
     const guide = GUIDES.find((g) => g.slug === params.slug);
     if (!guide) throw notFound();

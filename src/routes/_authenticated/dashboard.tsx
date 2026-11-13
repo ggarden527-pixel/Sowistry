@@ -5,12 +5,14 @@ import { PageHeader, SectionTitle } from "@/components/app/bits";
 import { PlantTable } from "@/components/app/PlantTable";
 import { StatCard } from "@/components/app/StatCard";
 import { TaskPanel } from "@/components/app/TaskPanel";
+import { WelcomeGarden } from "@/components/app/WelcomeGarden";
 import { Progress } from "@/components/ui/progress";
 import { daysFrom, getToday } from "@/lib/dates";
 import { useGarden } from "@/lib/garden-store";
 import { gardenHealthScore, needsWater } from "@/lib/inventory";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Garden Dashboard — Sowistry" },
@@ -38,6 +40,13 @@ const seasonalTips = [
 ];
 
 function Dashboard() {
+  const { ready, plants, tasks } = useGarden();
+  if (!ready) return <p className="py-20 text-center text-sm text-muted-foreground">Loading your garden…</p>;
+  if (!plants.length && !tasks.length) return <WelcomeGarden />;
+  return <GardenOverview />;
+}
+
+function GardenOverview() {
   const { plants, tasks } = useGarden();
   const today = getToday();
   const thirsty = plants.filter((p) => needsWater(p, today));

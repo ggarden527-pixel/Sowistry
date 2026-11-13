@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Droplets, Plus, Search, Sun } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -6,11 +6,13 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/app/bits";
 import { LIBRARY, type LibraryCategory } from "@/lib/data";
 import { getToday, toISO } from "@/lib/dates";
+import { useAuth } from "@/lib/auth/context";
 import { useGarden } from "@/lib/garden-store";
 import { plantImage } from "@/lib/plant-images";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_site/library")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Plant Library — Sowistry" },
@@ -31,7 +33,9 @@ const difficultyStyle = {
 };
 
 function LibraryPage() {
-  const { addPlant } = useGarden();
+  const { addPlant, ready } = useGarden();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("All");
   const [q, setQ] = useState("");
 
@@ -95,6 +99,12 @@ function LibraryPage() {
               <button
                 type="button"
                 onClick={() => {
+                  if (!user) {
+                    toast("Sign in to start your garden", { description: `Create a free account to add ${p.name} and get watering reminders.` });
+                    void navigate({ to: "/auth", search: { mode: "signup", redirect: "/library" } });
+                    return;
+                  }
+                  if (!ready) return;
                   const today = toISO(getToday());
                   addPlant({
                     name: p.name,

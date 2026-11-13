@@ -9,6 +9,7 @@ import { plantImage } from "@/lib/plant-images";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_site/guides/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Plant Guides — Sowistry" },

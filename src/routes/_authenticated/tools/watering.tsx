@@ -5,6 +5,7 @@ import { ChoiceChips, NumberField, ResultRow, ToolLayout } from "@/components/ap
 import { SOIL_FACTOR, WATER_BASE_IN_PER_WEEK, WEATHER_FACTOR, wateringNeed, type WaterInput } from "@/lib/calculators";
 
 export const Route = createFileRoute("/_authenticated/tools/watering")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Watering Calculator — Sowistry" },

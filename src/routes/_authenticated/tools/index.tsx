@@ -5,6 +5,7 @@ import { TOOLS } from "@/components/app/AppShell";
 import { PageHeader } from "@/components/app/bits";
 
 export const Route = createFileRoute("/_authenticated/tools/")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Gardening Tools — Sowistry" },

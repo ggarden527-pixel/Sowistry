@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SEED_CROPS, seedSchedule } from "@/lib/calculators";
 
 export const Route = createFileRoute("/_authenticated/tools/seed-starting")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Seed Starting Calculator — Sowistry" },

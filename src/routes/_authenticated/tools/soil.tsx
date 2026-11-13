@@ -5,6 +5,7 @@ import { ChoiceChips, NumberField, ResultRow, ToolLayout } from "@/components/ap
 import { soilVolume } from "@/lib/calculators";
 
 export const Route = createFileRoute("/_authenticated/tools/soil")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Soil Calculator — Sowistry" },

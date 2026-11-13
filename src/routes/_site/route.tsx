@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth/context";
 // Public, indexable pages. Signed-in gardeners browsing the Library or Guides keep their dashboard
 // sidebar; everyone else (and every crawler, since SSR has no session) gets the website header/footer.
 export const Route = createFileRoute("/_site")({
+  staticData: { sitemap: false },
   component: SiteLayout,
 });
 
