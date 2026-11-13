@@ -9,9 +9,15 @@ export const Route = createFileRoute("/_authenticated/tools/soil")({
   head: () => ({
     meta: [
       { title: "Soil Calculator — Sowistry" },
-      { name: "description", content: "Calculate how much soil, compost and how many bags you need to fill raised beds." },
+      {
+        name: "description",
+        content: "Calculate how much soil, compost and how many bags you need to fill raised beds.",
+      },
       { property: "og:title", content: "Soil Calculator — Sowistry" },
-      { property: "og:description", content: "Work out cubic feet, cubic yards and bags of soil for your raised beds." },
+      {
+        property: "og:description",
+        content: "Work out cubic feet, cubic yards and bags of soil for your raised beds.",
+      },
     ],
   }),
   component: SoilPage,
@@ -26,7 +32,13 @@ function SoilPage() {
   const [depth, setDepth] = useState(10);
   const [beds, setBeds] = useState(2);
   const [bag, setBag] = useState<(typeof BAGS)[number]>("1.5 cu ft");
-  const r = soilVolume({ lengthFt: length, widthFt: width, depthIn: depth, beds, bagCuFt: bagSize[bag] });
+  const r = soilVolume({
+    lengthFt: length,
+    widthFt: width,
+    depthIn: depth,
+    beds,
+    bagCuFt: bagSize[bag],
+  });
 
   return (
     <ToolLayout
@@ -35,14 +47,35 @@ function SoilPage() {
       form={
         <div className="space-y-5">
           <div className="grid gap-4 sm:grid-cols-2">
-            <NumberField id="len" label="Bed length" value={length} onChange={setLength} suffix="ft" step={0.5} />
-            <NumberField id="wid" label="Bed width" value={width} onChange={setWidth} suffix="ft" step={0.5} />
-            <NumberField id="dep" label="Soil depth" value={depth} onChange={setDepth} suffix="in" />
+            <NumberField
+              id="len"
+              label="Bed length"
+              value={length}
+              onChange={setLength}
+              suffix="ft"
+              step={0.5}
+            />
+            <NumberField
+              id="wid"
+              label="Bed width"
+              value={width}
+              onChange={setWidth}
+              suffix="ft"
+              step={0.5}
+            />
+            <NumberField
+              id="dep"
+              label="Soil depth"
+              value={depth}
+              onChange={setDepth}
+              suffix="in"
+            />
             <NumberField id="beds" label="Number of beds" value={beds} onChange={setBeds} min={1} />
           </div>
           <ChoiceChips label="Bag size" options={BAGS} value={bag} onChange={setBag} />
           <p className="rounded-xl bg-secondary p-4 text-sm text-muted-foreground">
-            Tip: most vegetables thrive in 8–12 inches of soil. A good raised-bed mix is roughly 60% topsoil, 30% compost and 10% aeration (perlite or bark).
+            Tip: most vegetables thrive in 8–12 inches of soil. A good raised-bed mix is roughly 60%
+            topsoil, 30% compost and 10% aeration (perlite or bark).
           </p>
         </div>
       }

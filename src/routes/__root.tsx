@@ -9,6 +9,7 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/lib/auth/context";
@@ -83,7 +84,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Sowistry — Grow naturally. Grow confidently." },
-      { name: "description", content: "Gardening tools, plant guides and a personal garden dashboard for watering, planting and care." },
+      {
+        name: "description",
+        content:
+          "Gardening tools, plant guides and a personal garden dashboard for watering, planting and care.",
+      },
       { name: "author", content: "Sowistry" },
       { property: "og:site_name", content: "Sowistry" },
       { property: "og:type", content: "website" },
@@ -118,6 +123,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <body>
         {children}
         <Scripts />
+        <SpeedInsights />
       </body>
     </html>
   );

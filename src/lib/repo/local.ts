@@ -1,6 +1,12 @@
 import type { Plant } from "../inventory";
 import type { Task } from "../tasks";
-import type { GardenRepository, GardenSnapshot, NewsletterRepository, PlannerBed, Profile } from "./types";
+import type {
+  GardenRepository,
+  GardenSnapshot,
+  NewsletterRepository,
+  PlannerBed,
+  Profile,
+} from "./types";
 
 const gardenKey = (userId: string) => `sowistry:garden:${userId}`;
 const bedKey = (userId: string) => `sowistry:bed:${userId}`;
@@ -10,7 +16,11 @@ function readGarden(userId: string): GardenSnapshot {
     const raw = window.localStorage.getItem(gardenKey(userId));
     if (raw) {
       const saved = JSON.parse(raw) as Partial<GardenSnapshot>;
-      return { plants: saved.plants ?? [], tasks: saved.tasks ?? [], profile: saved.profile ?? null };
+      return {
+        plants: saved.plants ?? [],
+        tasks: saved.tasks ?? [],
+        profile: saved.profile ?? null,
+      };
     }
   } catch {
     /* corrupt storage: start fresh */

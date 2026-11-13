@@ -105,16 +105,18 @@ const rowToProfile = (r: Row<"profiles">): Profile => ({
 export function createSupabaseGardenRepo(client: Db): GardenRepository {
   const upsertPlants = async (userId: string, plants: Plant[]) => {
     if (!plants.length) return;
-    const { error } = await client
-      .from("plants")
-      .upsert(plants.map((p) => plantToRow(userId, p)), { onConflict: "user_id,id" });
+    const { error } = await client.from("plants").upsert(
+      plants.map((p) => plantToRow(userId, p)),
+      { onConflict: "user_id,id" },
+    );
     if (error) throw error;
   };
   const upsertTasks = async (userId: string, tasks: Task[]) => {
     if (!tasks.length) return;
-    const { error } = await client
-      .from("tasks")
-      .upsert(tasks.map((t) => taskToRow(userId, t)), { onConflict: "user_id,id" });
+    const { error } = await client.from("tasks").upsert(
+      tasks.map((t) => taskToRow(userId, t)),
+      { onConflict: "user_id,id" },
+    );
     if (error) throw error;
   };
   const upsertProfile = async (userId: string, profile: Profile) => {
@@ -126,7 +128,10 @@ export function createSupabaseGardenRepo(client: Db): GardenRepository {
   const upsertBed = async (userId: string, bed: PlannerBed) => {
     const { error } = await client
       .from("planner_beds")
-      .upsert({ user_id: userId, rows: bed.rows, cols: bed.cols, cells: bed.cells }, { onConflict: "user_id" });
+      .upsert(
+        { user_id: userId, rows: bed.rows, cols: bed.cols, cells: bed.cells },
+        { onConflict: "user_id" },
+      );
     if (error) throw error;
   };
 
@@ -134,7 +139,11 @@ export function createSupabaseGardenRepo(client: Db): GardenRepository {
     async load(userId): Promise<GardenSnapshot> {
       const [profileRes, plantsRes, tasksRes] = await Promise.all([
         client.from("profiles").select("*").eq("id", userId).maybeSingle(),
-        client.from("plants").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+        client
+          .from("plants")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at", { ascending: false }),
         client.from("tasks").select("*").eq("user_id", userId).order("due"),
       ]);
       if (profileRes.error) throw profileRes.error;
@@ -156,7 +165,11 @@ export function createSupabaseGardenRepo(client: Db): GardenRepository {
     },
     savePlants: upsertPlants,
     async deletePlant(userId, plantId) {
-      const { error } = await client.from("plants").delete().eq("user_id", userId).eq("id", plantId);
+      const { error } = await client
+        .from("plants")
+        .delete()
+        .eq("user_id", userId)
+        .eq("id", plantId);
       if (error) throw error;
     },
     saveTasks: upsertTasks,

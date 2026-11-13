@@ -28,4 +28,5 @@ export const plantImages = {
 
 export type PlantImageKey = keyof typeof plantImages;
 export const plantImageKeys = Object.keys(plantImages) as PlantImageKey[];
-export const plantImage = (key: string) => plantImages[key as PlantImageKey] ?? plantImages.monstera;
+export const plantImage = (key: string) =>
+  plantImages[key as PlantImageKey] ?? plantImages.monstera;

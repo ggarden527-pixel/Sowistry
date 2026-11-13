@@ -1,8 +1,25 @@
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Droplets, Search, SlidersHorizontal, Trash2, TriangleAlert } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  Droplets,
+  Search,
+  SlidersHorizontal,
+  Trash2,
+  TriangleAlert,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { agoLabel, daysFrom, getToday, relativeDayLabel } from "@/lib/dates";
 import { useGarden } from "@/lib/garden-store";
 import {
@@ -19,7 +36,17 @@ import { cn } from "@/lib/utils";
 
 import { HealthBadge, PlantThumb, SunMeter } from "./bits";
 
-export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = false, allowDelete = false }: { pageSize?: number; initialQuery?: string; showLocation?: boolean; allowDelete?: boolean }) {
+export function PlantTable({
+  pageSize = 5,
+  initialQuery = "",
+  showLocation = false,
+  allowDelete = false,
+}: {
+  pageSize?: number;
+  initialQuery?: string;
+  showLocation?: boolean;
+  allowDelete?: boolean;
+}) {
   const { plants, waterPlant, removePlant } = useGarden();
   const [query, setQuery] = useState(initialQuery);
   const [health, setHealth] = useState<Health | "all">("all");
@@ -48,7 +75,13 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
   };
 
   const SortIcon = ({ k }: { k: SortKey }) =>
-    sort !== k ? <ArrowUpDown className="h-3.5 w-3.5 opacity-50" /> : dir === "asc" ? <ArrowUp className="h-3.5 w-3.5" /> : <ArrowDown className="h-3.5 w-3.5" />;
+    sort !== k ? (
+      <ArrowUpDown className="h-3.5 w-3.5 opacity-50" />
+    ) : dir === "asc" ? (
+      <ArrowUp className="h-3.5 w-3.5" />
+    ) : (
+      <ArrowDown className="h-3.5 w-3.5" />
+    );
 
   const th = "eyebrow px-3 py-3.5 text-left font-bold @lg:px-5";
   const sortBtn = "inline-flex items-center gap-1.5 whitespace-nowrap uppercase hover:text-primary";
@@ -79,24 +112,38 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
           )}
         >
           <SlidersHorizontal className="h-4 w-4" /> Filters
-          {(health !== "all" || sunlight !== "all") && <span className="h-1.5 w-1.5 rounded-full bg-leaf" />}
+          {(health !== "all" || sunlight !== "all") && (
+            <span className="h-1.5 w-1.5 rounded-full bg-leaf" />
+          )}
         </button>
       </div>
 
       {showFilters && (
         <div className="mb-4 grid gap-3 rounded-xl border border-border bg-secondary/60 p-3 sm:grid-cols-[1fr_1fr_auto]">
           <Select value={health} onValueChange={(v) => setHealth(v as Health | "all")}>
-            <SelectTrigger className="bg-card"><SelectValue placeholder="Health" /></SelectTrigger>
+            <SelectTrigger className="bg-card">
+              <SelectValue placeholder="Health" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All health states</SelectItem>
-              {HEALTH_LEVELS.map((h) => <SelectItem key={h} value={h}>{h}</SelectItem>)}
+              {HEALTH_LEVELS.map((h) => (
+                <SelectItem key={h} value={h}>
+                  {h}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Select value={sunlight} onValueChange={(v) => setSunlight(v as Sunlight | "all")}>
-            <SelectTrigger className="bg-card"><SelectValue placeholder="Sunlight" /></SelectTrigger>
+            <SelectTrigger className="bg-card">
+              <SelectValue placeholder="Sunlight" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All light levels</SelectItem>
-              {SUNLIGHT_LEVELS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              {SUNLIGHT_LEVELS.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <button
@@ -118,17 +165,25 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
             <thead className="border-b border-border bg-background/60">
               <tr>
                 <th className={th}>
-                  <button type="button" className={sortBtn} onClick={() => toggleSort("name")}>Plant <SortIcon k="name" /></button>
+                  <button type="button" className={sortBtn} onClick={() => toggleSort("name")}>
+                    Plant <SortIcon k="name" />
+                  </button>
                 </th>
                 <th className={th}>
-                  <button type="button" className={sortBtn} onClick={() => toggleSort("watering")}>Next watering <SortIcon k="watering" /></button>
+                  <button type="button" className={sortBtn} onClick={() => toggleSort("watering")}>
+                    Next watering <SortIcon k="watering" />
+                  </button>
                 </th>
                 <th className={cn(th, colSun)}>Sunlight</th>
                 <th className={cn(th, colFeed)}>Fertilizer</th>
                 <th className={cn(th, colHealth)}>
-                  <button type="button" className={sortBtn} onClick={() => toggleSort("health")}>Health <SortIcon k="health" /></button>
+                  <button type="button" className={sortBtn} onClick={() => toggleSort("health")}>
+                    Health <SortIcon k="health" />
+                  </button>
                 </th>
-                <th className={cn(th, "text-right")}><span className="sr-only">Actions</span></th>
+                <th className={cn(th, "text-right")}>
+                  <span className="sr-only">Actions</span>
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -149,7 +204,9 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
                       <div className="flex items-center gap-3.5">
                         <PlantThumb imageKey={p.imageKey} className="hidden @md:block" />
                         <div className="min-w-0">
-                          <p className="line-clamp-2 text-sm font-semibold text-primary">{p.name}</p>
+                          <p className="line-clamp-2 text-sm font-semibold text-primary">
+                            {p.name}
+                          </p>
                           <p className="line-clamp-1 text-xs text-muted-foreground">
                             {p.species}
                             {showLocation && <> · {p.location}</>}
@@ -159,7 +216,12 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
                       </div>
                     </td>
                     <td className="px-3 py-4 @md:whitespace-nowrap @lg:px-5">
-                      <p className={cn("text-sm font-semibold", w < 0 ? "text-destructive" : w === 0 ? "text-warning" : "text-primary")}>
+                      <p
+                        className={cn(
+                          "text-sm font-semibold",
+                          w < 0 ? "text-destructive" : w === 0 ? "text-warning" : "text-primary",
+                        )}
+                      >
                         {relativeDayLabel(w)}
                       </p>
                       <p className="text-xs text-muted-foreground">Last: {agoLabel(lastAgo)}</p>
@@ -177,7 +239,9 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
                           <span className="h-2 w-2 rounded-full bg-leaf" /> {relativeDayLabel(f)}
                         </span>
                       )}
-                      <p className="text-xs text-muted-foreground">Every {p.fertilizeEveryDays} days</p>
+                      <p className="text-xs text-muted-foreground">
+                        Every {p.fertilizeEveryDays} days
+                      </p>
                     </td>
                     <td className={cn("whitespace-nowrap px-5 py-4", colHealth)}>
                       <HealthBadge health={p.health} />
@@ -188,13 +252,18 @@ export function PlantTable({ pageSize = 5, initialQuery = "", showLocation = fal
                           type="button"
                           onClick={() => {
                             waterPlant(p.id);
-                            toast.success(`${p.name} watered`, { description: "Next reminder rescheduled." });
+                            toast.success(`${p.name} watered`, {
+                              description: "Next reminder rescheduled.",
+                            });
                           }}
                           disabled={lastAgo === 0}
                           className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-water-soft px-3 text-xs font-semibold text-water transition hover:brightness-95 disabled:opacity-40"
                           aria-label={`Mark ${p.name} as watered`}
                         >
-                          <Droplets className="h-3.5 w-3.5" /> <span className="hidden @md:inline">{lastAgo === 0 ? "Watered" : "Water"}</span>
+                          <Droplets className="h-3.5 w-3.5" />{" "}
+                          <span className="hidden @md:inline">
+                            {lastAgo === 0 ? "Watered" : "Water"}
+                          </span>
                         </button>
                         {allowDelete && (
                           <button

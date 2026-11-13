@@ -22,7 +22,14 @@ import {
 import { useMemo, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { auth } from "@/lib/auth";
@@ -47,10 +54,30 @@ const NAV: NavItem[] = [
 ];
 
 export const TOOLS = [
-  { title: "Soil Calculator", to: "/tools/soil", icon: FlaskConical, blurb: "How much soil and compost to fill your beds." },
-  { title: "Seed Starting", to: "/tools/seed-starting", icon: Sprout, blurb: "When to sow indoors and how many seeds you need." },
-  { title: "Watering Calculator", to: "/tools/watering", icon: Droplets, blurb: "Weekly water needs based on weather and soil." },
-  { title: "Garden Planner", to: "/tools/planner", icon: LayoutGrid, blurb: "Lay out your beds square by square." },
+  {
+    title: "Soil Calculator",
+    to: "/tools/soil",
+    icon: FlaskConical,
+    blurb: "How much soil and compost to fill your beds.",
+  },
+  {
+    title: "Seed Starting",
+    to: "/tools/seed-starting",
+    icon: Sprout,
+    blurb: "When to sow indoors and how many seeds you need.",
+  },
+  {
+    title: "Watering Calculator",
+    to: "/tools/watering",
+    icon: Droplets,
+    blurb: "Weekly water needs based on weather and soil.",
+  },
+  {
+    title: "Garden Planner",
+    to: "/tools/planner",
+    icon: LayoutGrid,
+    blurb: "Lay out your beds square by square.",
+  },
 ] as const;
 
 const NAV_BOTTOM: NavItem[] = [
@@ -60,7 +87,8 @@ const NAV_BOTTOM: NavItem[] = [
 
 const linkBase =
   "group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[0.9rem] font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-primary";
-const linkActive = "bg-secondary text-primary font-semibold shadow-[inset_3px_0_0_var(--color-leaf)]";
+const linkActive =
+  "bg-secondary text-primary font-semibold shadow-[inset_3px_0_0_var(--color-leaf)]";
 
 function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: (() => void) | undefined }) {
   return (
@@ -158,8 +186,12 @@ function SidebarContent({ onNavigate }: { onNavigate?: (() => void) | undefined 
             {initials(settings.name)}
           </span>
           <span className="min-w-0">
-            <span className="block truncate text-sm font-semibold text-primary">{settings.name || "Gardener"}</span>
-            <span className="block truncate text-xs text-muted-foreground">{gardenLine(settings)}</span>
+            <span className="block truncate text-sm font-semibold text-primary">
+              {settings.name || "Gardener"}
+            </span>
+            <span className="block truncate text-xs text-muted-foreground">
+              {gardenLine(settings)}
+            </span>
           </span>
         </Link>
         <Button
@@ -189,15 +221,27 @@ function GlobalSearch() {
     if (!needle) return [];
     const out: { label: string; sub: string; go: () => void }[] = [];
     plants
-      .filter((p) => p.name.toLowerCase().includes(needle) || p.species.toLowerCase().includes(needle))
+      .filter(
+        (p) => p.name.toLowerCase().includes(needle) || p.species.toLowerCase().includes(needle),
+      )
       .slice(0, 3)
-      .forEach((p) => out.push({ label: p.name, sub: "My Garden", go: () => navigate({ to: "/garden", search: { q: p.name } }) }));
+      .forEach((p) =>
+        out.push({
+          label: p.name,
+          sub: "My Garden",
+          go: () => navigate({ to: "/garden", search: { q: p.name } }),
+        }),
+      );
     LIBRARY.filter((l) => l.name.toLowerCase().includes(needle))
       .slice(0, 2)
-      .forEach((l) => out.push({ label: l.name, sub: "Plant Library", go: () => navigate({ to: "/library" }) }));
+      .forEach((l) =>
+        out.push({ label: l.name, sub: "Plant Library", go: () => navigate({ to: "/library" }) }),
+      );
     GUIDES.filter((g) => g.title.toLowerCase().includes(needle))
       .slice(0, 2)
-      .forEach((g) => out.push({ label: g.title, sub: "Plant Guide", go: () => navigate({ to: "/guides" }) }));
+      .forEach((g) =>
+        out.push({ label: g.title, sub: "Plant Guide", go: () => navigate({ to: "/guides" }) }),
+      );
     TOOLS.filter((t) => t.title.toLowerCase().includes(needle)).forEach((t) =>
       out.push({ label: t.title, sub: "Gardening Tool", go: () => navigate({ to: t.to }) }),
     );
@@ -271,7 +315,11 @@ function Notifications() {
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80 rounded-xl p-2">
         <p className="eyebrow px-2 pb-2 pt-1">Needs your attention</p>
-        {pending.length === 0 && <p className="px-2 py-4 text-sm text-muted-foreground">All caught up — your garden is happy.</p>}
+        {pending.length === 0 && (
+          <p className="px-2 py-4 text-sm text-muted-foreground">
+            All caught up — your garden is happy.
+          </p>
+        )}
         <div className="max-h-80 space-y-1 overflow-y-auto">
           {pending.map((t) => {
             const d = daysFrom(t.due, today);
@@ -284,8 +332,15 @@ function Notifications() {
               >
                 <PlantThumb imageKey={t.imageKey ?? "basil"} size="sm" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold text-primary">{t.title}</span>
-                  <span className={cn("block text-xs", d < 0 ? "text-destructive" : "text-muted-foreground")}>
+                  <span className="block truncate text-sm font-semibold text-primary">
+                    {t.title}
+                  </span>
+                  <span
+                    className={cn(
+                      "block text-xs",
+                      d < 0 ? "text-destructive" : "text-muted-foreground",
+                    )}
+                  >
                     {relativeDayLabel(d)} · tap to complete
                   </span>
                 </span>
@@ -341,10 +396,14 @@ function UserMenu() {
           <Link to="/settings">Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/garden" search={{}}>My Garden</Link>
+          <Link to="/garden" search={{}}>
+            My Garden
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/"><Globe /> Sowistry website</Link>
+          <Link to="/">
+            <Globe /> Sowistry website
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => void signOut()}>

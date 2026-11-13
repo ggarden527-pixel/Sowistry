@@ -57,10 +57,13 @@ function ResetPasswordPage() {
         ) : !user ? (
           <>
             <p className="mt-2 text-sm text-muted-foreground">
-              This reset link has expired or was already used. Request a new one from the sign-in page.
+              This reset link has expired or was already used. Request a new one from the sign-in
+              page.
             </p>
             <Button asChild variant="leaf" size="lg" className="mt-6 w-full">
-              <Link to="/auth" search={{ mode: "signin" }}>Back to sign in</Link>
+              <Link to="/auth" search={{ mode: "signin" }}>
+                Back to sign in
+              </Link>
             </Button>
           </>
         ) : (
@@ -68,13 +71,33 @@ function ResetPasswordPage() {
             <p className="text-sm text-muted-foreground">For {user.email}</p>
             <div className="space-y-1.5">
               <Label htmlFor="new-password">New password</Label>
-              <Input id="new-password" type="password" required minLength={8} autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input
+                id="new-password"
+                type="password"
+                required
+                minLength={8}
+                autoComplete="new-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="confirm-password">Confirm new password</Label>
-              <Input id="confirm-password" type="password" required minLength={8} autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+              <Input
+                id="confirm-password"
+                type="password"
+                required
+                minLength={8}
+                autoComplete="new-password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+              />
             </div>
-            {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+            {error && (
+              <p role="alert" className="text-sm text-destructive">
+                {error}
+              </p>
+            )}
             <Button type="submit" variant="leaf" size="lg" className="w-full" disabled={busy}>
               Save new password
             </Button>

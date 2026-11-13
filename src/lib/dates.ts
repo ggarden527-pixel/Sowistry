@@ -4,7 +4,8 @@ export const toISO = (d: Date) => format(d, "yyyy-MM-dd");
 export const getToday = () => startOfDay(new Date());
 export const offsetISO = (days: number, base: Date = getToday()) => toISO(addDays(base, days));
 /** Calendar days from `today` until the ISO date (negative = in the past). */
-export const daysFrom = (iso: string, today: Date) => differenceInCalendarDays(parseISO(iso), today);
+export const daysFrom = (iso: string, today: Date) =>
+  differenceInCalendarDays(parseISO(iso), today);
 export const addDaysISO = (iso: string, days: number) => toISO(addDays(parseISO(iso), days));
 
 export function relativeDayLabel(days: number): string {
