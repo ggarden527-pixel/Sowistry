@@ -35,10 +35,9 @@ your app's `/auth` URL as a redirect destination. Use the provider callback URL 
 Supabase dashboard when configuring Google and Apple. Never put a Supabase service-role key in
 browser code.
 
-Signed-in garden data is stored in `public.user_gardens`. Have Lovable create this table with
-`user_id uuid` as the primary key and a foreign key to `auth.users(id)` with cascade delete;
-`plants jsonb not null default '[]'`, `tasks jsonb not null default '[]'`,
-`profile jsonb`, and `planner_bed jsonb`. Enable row-level security and add select, insert,
-and update policies restricted to `auth.uid() = user_id`. Grant those operations to the
-`authenticated` role. Until the table exists, authenticated garden operations report a
-database error; they do not silently claim data was saved.
+Signed-in garden data lives in the connected Supabase project in `profiles`, `plants`, `tasks`
+and `planner_beds`, each protected by row-level security so a gardener can only read and change
+their own rows. A profile is created automatically at sign-up. Homepage newsletter sign-ups go to
+`newsletter_subscribers`, which visitors can add to but never read. Password-reset emails link to
+`/reset-password`; add that URL (for the published site and the preview) to the Supabase
+redirect allow-list alongside `/auth`.

@@ -28,3 +28,10 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- Pages talk only to `src/lib/auth` (identity) and `src/lib/repo` (storage); each has one switch file choosing Supabase or the device-only preview backend. Why: the backend can change without touching pages.
+- Garden data is stored as one row per plant/task (upsert by `user_id,id`), never as a whole-list JSON blob. Why: saving one item must not overwrite or race with the user's other items.
+- Use the generated Supabase client from `src/integrations/supabase/client` for both auth and storage. Why: a second client causes duplicate sessions on the same storage key.
+- Every route sets `staticData.sitemap`; the private `_authenticated` layout uses `"exclude-subtree"`. Why: the sitemap is derived from routes and must never list private pages.

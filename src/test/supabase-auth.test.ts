@@ -61,4 +61,15 @@ describe("Supabase authentication", () => {
       },
     });
   });
+
+  it("sends password-reset links to the reset-password page", async () => {
+    const reset = vi
+      .spyOn(client.auth, "resetPasswordForEmail")
+      .mockResolvedValue({ data: {}, error: null });
+
+    await auth.sendPasswordReset("gardener@example.com");
+    expect(reset).toHaveBeenCalledWith("gardener@example.com", {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+  });
 });
