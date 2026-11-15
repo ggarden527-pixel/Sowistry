@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { auth, safeRedirect, type OAuthProvider } from "@/lib/auth";
 import { useAuth } from "@/lib/auth/context";
 
+const POST_AUTH_KEY = "sowistry:post-auth-redirect";
+
 type Search = { mode?: "signin" | "signup"; redirect?: string };
 
 export const Route = createFileRoute("/auth")({
@@ -25,6 +27,7 @@ export const Route = createFileRoute("/auth")({
       { property: "og:description", content: "Sign in or create your Sowistry account." },
       { name: "robots", content: "noindex" },
     ],
+    links: [{ rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Google+Sans:wght@500&display=swap" }],
   }),
   component: AuthPage,
 });
@@ -42,8 +45,13 @@ function AuthPage() {
   const dest = safeRedirect(search.redirect);
 
   useEffect(() => {
-    if (user) void router.navigate({ href: dest, replace: true });
-  }, [user, dest, router]);
+    if (!user) return;
+    // After Google/Apple sign-in the page returns to a clean /auth URL; the destination was kept here.
+    const stored = window.sessionStorage.getItem(POST_AUTH_KEY);
+    window.sessionStorage.removeItem(POST_AUTH_KEY);
+    const target = search.redirect ? dest : safeRedirect(stored ?? undefined);
+    void router.navigate({ href: target, replace: true });
+  }, [user, dest, search.redirect, router]);
 
   const run = async (fn: () => Promise<unknown>) => {
     setBusy(true);
@@ -77,9 +85,9 @@ function AuthPage() {
     });
   };
   const oauth = (p: OAuthProvider) => {
-    const returnTo = new URL("/auth", window.location.origin);
-    returnTo.searchParams.set("redirect", dest);
-    void run(() => auth.signInWithOAuth(p, returnTo.toString()));
+    // Return to a clean public URL so it matches the Redirect URLs allow-list in Supabase exactly.
+    window.sessionStorage.setItem(POST_AUTH_KEY, dest);
+    void run(() => auth.signInWithOAuth(p, `${window.location.origin}/auth`));
   };
 
   return (
@@ -103,8 +111,8 @@ function AuthPage() {
         )}
 
         <div className="mt-6 grid gap-2">
-          <Button type="button" variant="outline" size="lg" disabled={busy} onClick={() => oauth("google")}>
-            <GoogleIcon className="h-5 w-5" /> Continue with Google
+          <Button type="button" variant="google" size="lg" className="gap-[10px] px-3 [&_svg]:size-[18px]" disabled={busy} onClick={() => oauth("google")}>
+            <GoogleIcon /> Continue with Google
           </Button>
           <Button type="button" variant="outline" size="lg" disabled={busy} onClick={() => oauth("apple")}>
             <AppleIcon className="h-5 w-5" /> Continue with Apple

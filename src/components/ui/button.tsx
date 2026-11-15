@@ -17,6 +17,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         leaf: "bg-leaf text-leaf-foreground shadow-cta hover:bg-leaf/90 font-semibold",
+        google: "google-button shadow-sm",
         soft: "bg-secondary text-secondary-foreground hover:bg-accent/60",
       },
       size: {

@@ -156,6 +156,20 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Google's required light-theme sign-in button colours (brand guidelines, not app theme). */
+@utility google-button {
+  background-color: #ffffff;
+  border: 1px solid #747775;
+  color: #1f1f1f;
+  font-family: "Google Sans", var(--font-sans), sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  &:hover {
+    background-color: #f8faff;
+  }
+}
+
 @utility eyebrow {
   font-size: 0.6875rem;
   font-weight: 700;
