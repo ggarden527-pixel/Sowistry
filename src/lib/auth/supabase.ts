@@ -25,8 +25,27 @@ function mapUser(user: User | null): AuthUser | null {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function createSupabaseAuth(client: SupabaseClient<any>): AuthBackend {
+const PROVIDER_NAMES: Record<OAuthProvider, string> = { google: "Google", apple: "Apple" };
+
+/** Asks Supabase which sign-in providers are switched on, so a disabled one never opens a raw error page. */
+export function createProviderCheck(url: string, key: string) {
+  return async (provider: OAuthProvider): Promise<boolean> => {
+    try {
+      const res = await fetch(`${url}/auth/v1/settings`, { headers: { apikey: key } });
+      if (!res.ok) return true; // can't tell — let Supabase decide
+      const settings = (await res.json()) as { external?: Record<string, boolean> };
+      return settings.external?.[provider] === true;
+    } catch {
+      return true;
+    }
+  };
+}
+
+export function createSupabaseAuth(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  client: SupabaseClient<any>,
+  isProviderEnabled?: (provider: OAuthProvider) => Promise<boolean>,
+): AuthBackend {
   return {
     kind: "supabase",
     async getUser() {
@@ -57,6 +76,11 @@ export function createSupabaseAuth(client: SupabaseClient<any>): AuthBackend {
       return { needsEmailConfirmation: !data.session };
     },
     async signInWithOAuth(provider: OAuthProvider, returnTo: string) {
+      if (isProviderEnabled && !(await isProviderEnabled(provider))) {
+        throw new Error(
+          `Signing in with ${PROVIDER_NAMES[provider]} isn't available yet. Please use your email and password for now.`,
+        );
+      }
       const { error } = await client.auth.signInWithOAuth({
         provider,
         options: { redirectTo: returnTo },
@@ -90,5 +114,5 @@ export const supabaseClient: SupabaseClient<Database> | null =
   supabaseUrl && supabaseKey ? supabase : null;
 
 export const supabaseAuth: AuthBackend | null = supabaseClient
-  ? createSupabaseAuth(supabaseClient)
+  ? createSupabaseAuth(supabaseClient, createProviderCheck(supabaseUrl!, supabaseKey!))
   : null;

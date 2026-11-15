@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { createSupabaseAuth } from "@/lib/auth/supabase";
+import { createProviderCheck, createSupabaseAuth } from "@/lib/auth/supabase";
 
 const client = createClient("https://example.supabase.co", "test-publishable-key", {
   auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
@@ -38,6 +38,25 @@ describe("Supabase authentication", () => {
       provider,
       options: { redirectTo: returnTo },
     });
+  });
+
+  it("shows a friendly message instead of leaving the site when a provider is switched off", async () => {
+    const signIn = vi.spyOn(client.auth, "signInWithOAuth");
+    const guarded = createSupabaseAuth(client, async () => false);
+
+    await expect(guarded.signInWithOAuth("google", "https://sowistry.example/auth")).rejects.toThrow(
+      "Signing in with Google isn't available yet",
+    );
+    expect(signIn).not.toHaveBeenCalled();
+  });
+
+  it("reads which providers are switched on from Supabase settings", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ external: { email: true, google: false, apple: true } })),
+    );
+    const check = createProviderCheck("https://example.supabase.co", "key");
+    expect(await check("google")).toBe(false);
+    expect(await check("apple")).toBe(true);
   });
 
   it("creates email accounts with a confirmation redirect and name metadata", async () => {
