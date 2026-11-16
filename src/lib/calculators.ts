@@ -110,3 +110,42 @@ export function plannerTotals(cells: (string | null)[]) {
   }
   return counts;
 }
+
+/** Classic companion-planting pairs (symmetric). */
+export const COMPANION_GOOD: [string, string][] = [
+  ["tomato", "basil"], ["tomato", "marigold"], ["tomato", "lettuce"], ["pepper", "basil"],
+  ["pepper", "marigold"], ["lettuce", "strawberry"], ["strawberry", "marigold"],
+  ["rosemary", "lavender"], ["lettuce", "marigold"],
+];
+export const COMPANION_BAD: [string, string][] = [
+  ["tomato", "rosemary"], ["basil", "rosemary"], ["strawberry", "rosemary"], ["basil", "lavender"],
+];
+
+const pairKey = (a: string, b: string) => [a, b].sort().join("|");
+const GOOD = new Set(COMPANION_GOOD.map(([a, b]) => pairKey(a, b)));
+const BAD = new Set(COMPANION_BAD.map(([a, b]) => pairKey(a, b)));
+
+export function companionStatus(a: string, b: string): "good" | "bad" | "neutral" {
+  const k = pairKey(a, b);
+  return GOOD.has(k) ? "good" : BAD.has(k) ? "bad" : "neutral";
+}
+
+/** Finds neighbouring (side-by-side) crop pairs in the bed and rates them. */
+export function companionReport(cells: (string | null)[], cols: number) {
+  const good = new Set<string>();
+  const bad = new Set<string>();
+  const badCells = new Set<number>();
+  cells.forEach((v, i) => {
+    if (!v) return;
+    const right = (i + 1) % cols !== 0 ? i + 1 : -1;
+    for (const j of [right, i + cols]) {
+      const w = cells[j];
+      if (j < 0 || !w || w === v) continue;
+      const st = companionStatus(v, w);
+      if (st === "good") good.add(pairKey(v, w));
+      if (st === "bad") { bad.add(pairKey(v, w)); badCells.add(i); badCells.add(j); }
+    }
+  });
+  const split = (s: Set<string>) => [...s].map((k) => k.split("|") as [string, string]);
+  return { good: split(good), bad: split(bad), badCells };
+}

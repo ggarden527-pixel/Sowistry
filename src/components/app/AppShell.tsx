@@ -358,7 +358,7 @@ function UserMenu() {
 function TopBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-20 border-b border-border bg-background/85 backdrop-blur-md">
+    <header className="print:hidden sticky top-0 z-20 border-b border-border bg-background/85 backdrop-blur-md">
       <div className="flex h-[4.5rem] items-center gap-3 px-4 sm:px-6 lg:px-8">
         <button
           type="button"
@@ -388,10 +388,10 @@ function TopBar() {
 export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[272px] border-r border-border bg-sidebar lg:flex">
+      <aside className="print:hidden fixed inset-y-0 left-0 z-30 hidden w-[272px] border-r border-border bg-sidebar lg:flex">
         <SidebarContent />
       </aside>
-      <div className="lg:pl-[272px]">
+      <div className="lg:pl-[272px] print:pl-0">
         <TopBar />
         <main className="px-4 py-7 sm:px-6 lg:px-8 lg:py-9">{children}</main>
       </div>

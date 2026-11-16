@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Eraser, RotateCcw } from "lucide-react";
+import { AlertTriangle, Eraser, Heart, Printer, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/app/bits";
 import { NumberField } from "@/components/app/ToolLayout";
 import { Button } from "@/components/ui/button";
-import { PLANNER_CROPS, plannerTotals } from "@/lib/calculators";
+import { PLANNER_CROPS, companionReport, companionStatus, plannerTotals } from "@/lib/calculators";
 import { useAuth } from "@/lib/auth/context";
 import { plantImage } from "@/lib/plant-images";
 import { gardenRepo } from "@/lib/repo";
@@ -98,6 +98,10 @@ function PlannerPage() {
   const paint = (i: number) => setCells((prev) => prev.map((v, j) => (j === i ? brush : v)));
   const totals = plannerTotals(cells);
   const planted = cells.filter(Boolean).length;
+  const report = companionReport(cells, cols);
+  const cropName = (k: string) => PLANNER_CROPS.find((c) => c.key === k)?.name ?? k;
+  const brushFriends = brush ? PLANNER_CROPS.filter((c) => c.key !== brush && companionStatus(brush, c.key) === "good") : [];
+  const brushFoes = brush ? PLANNER_CROPS.filter((c) => c.key !== brush && companionStatus(brush, c.key) === "bad") : [];
   const totalPlants = Object.values(totals).reduce((sum, t) => sum + t.plants, 0);
 
   return (
@@ -106,14 +110,19 @@ function PlannerPage() {
         title="Garden Planner"
         subtitle="Pick a plant, then tap or drag across squares. Each square is 1 × 1 ft."
         actions={
+          <div className="flex gap-2 print:hidden">
+          <Button variant="outline" onClick={() => window.print()}>
+            <Printer /> Print / save PDF
+          </Button>
           <Button variant="outline" onClick={() => setCells(Array(rows * cols).fill(null))}>
             <RotateCcw /> Clear bed
           </Button>
+          </div>
         }
       />
 
       <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)] 2xl:grid-cols-[240px_minmax(0,1fr)_260px]">
-        <div className="surface space-y-4 self-start p-5">
+        <div className="surface space-y-4 self-start p-5 print:hidden">
           <p className="eyebrow">Plants</p>
           <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
             {PLANNER_CROPS.map((c) => (
@@ -145,6 +154,12 @@ function PlannerPage() {
             </button>
           </div>
           <div className="grid grid-cols-2 gap-3 border-t border-border pt-4">
+            {brush && (brushFriends.length > 0 || brushFoes.length > 0) && (
+              <div className="col-span-2 space-y-1 rounded-lg bg-background p-3 text-xs">
+                {brushFriends.length > 0 && <p><span className="font-semibold text-leaf">Grows well with:</span> {brushFriends.map((c) => c.name).join(", ")}</p>}
+                {brushFoes.length > 0 && <p><span className="font-semibold text-destructive">Keep apart from:</span> {brushFoes.map((c) => c.name).join(", ")}</p>}
+              </div>
+            )}
             <NumberField id="rows" label="Length (ft)" value={rows} onChange={(n) => resize(n, cols)} min={1} />
             <NumberField id="cols" label="Width (ft)" value={cols} onChange={(n) => resize(rows, n)} min={1} />
           </div>
@@ -165,6 +180,7 @@ function PlannerPage() {
                   onMouseEnter={() => painting && paint(i)}
                   className={cn(
                     "aspect-square overflow-hidden rounded-md transition-transform hover:scale-[1.04]",
+                    report.badCells.has(i) && "ring-2 ring-destructive",
                     v ? "bg-card" : "bg-primary-foreground/10 hover:bg-primary-foreground/20",
                   )}
                 >
@@ -191,6 +207,17 @@ function PlannerPage() {
             })}
             {planted === 0 && <p className="text-sm text-muted-foreground">Your bed is empty. Start planting!</p>}
           </div>
+          {(report.good.length > 0 || report.bad.length > 0) && (
+            <div className="mt-5 space-y-2 border-t border-border pt-4">
+              <p className="eyebrow">Companions</p>
+              {report.bad.map(([a, b]) => (
+                <p key={a + b} className="flex items-start gap-2 text-sm text-destructive"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> {cropName(a)} and {cropName(b)} don't grow well side by side.</p>
+              ))}
+              {report.good.map(([a, b]) => (
+                <p key={a + b} className="flex items-start gap-2 text-sm text-primary"><Heart className="mt-0.5 h-4 w-4 shrink-0 text-leaf" /> {cropName(a)} and {cropName(b)} are great neighbours.</p>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
