@@ -91,6 +91,15 @@ export interface LibraryPlant {
   id: string;
   name: string;
   latin: string;
+  alternateNames?: string[];
+  family?: string;
+  nativeRegion?: string;
+  plantType?: "Annual" | "Perennial" | "Shrub" | "Vine" | "Tree";
+  environment?: "Indoor" | "Outdoor" | "Indoor & Outdoor";
+  edible?: boolean;
+  petSafe?: boolean;
+  matureSize?: string;
+  growthHabit?: string;
   imageKey: string;
   category: LibraryCategory;
   difficulty: "Easy" | "Moderate" | "Expert";
@@ -99,22 +108,77 @@ export interface LibraryPlant {
   fertilizeEveryDays: number;
   season: string;
   blurb: string;
+  care?: {
+    introduction: string;
+    watering: string;
+    soil: string;
+    sunlight: string;
+    fertilizing: string;
+    temperature: string;
+    humidity: string;
+    maintenance: string;
+    problems: { symptom: string; likelyCause: string; solution: string }[];
+  };
 }
 
 export const LIBRARY: LibraryPlant[] = [
-  { id: "l1", name: "Cherry Tomato", latin: "Solanum lycopersicum", imageKey: "tomato", category: "Vegetables", difficulty: "Moderate", sunlight: "Full Sun", waterEveryDays: 2, fertilizeEveryDays: 14, season: "Spring – Summer", blurb: "Sweet, prolific and perfect for containers. Stake early and pinch side shoots." },
-  { id: "l2", name: "Bell Pepper", latin: "Capsicum annuum", imageKey: "pepper", category: "Vegetables", difficulty: "Moderate", sunlight: "Full Sun", waterEveryDays: 2, fertilizeEveryDays: 14, season: "Spring – Summer", blurb: "Loves heat. Start indoors early and transplant once nights stay warm." },
-  { id: "l3", name: "Butterhead Lettuce", latin: "Lactuca sativa", imageKey: "lettuce", category: "Vegetables", difficulty: "Easy", sunlight: "Partial Sun", waterEveryDays: 2, fertilizeEveryDays: 21, season: "Spring & Autumn", blurb: "Tender cool-season leaves. Sow every two weeks for a steady harvest." },
-  { id: "l4", name: "Sweet Basil", latin: "Ocimum basilicum", imageKey: "basil", category: "Herbs", difficulty: "Easy", sunlight: "Full Sun", waterEveryDays: 2, fertilizeEveryDays: 21, season: "Summer", blurb: "Pinch flower buds to keep leaves coming. Grows beautifully beside tomatoes." },
-  { id: "l5", name: "Rosemary", latin: "Salvia rosmarinus", imageKey: "rosemary", category: "Herbs", difficulty: "Easy", sunlight: "Full Sun", waterEveryDays: 10, fertilizeEveryDays: 60, season: "Year-round", blurb: "Drought-tolerant Mediterranean shrub. Prefers lean, fast-draining soil." },
-  { id: "l6", name: "English Lavender", latin: "Lavandula angustifolia", imageKey: "lavender", category: "Herbs", difficulty: "Moderate", sunlight: "Full Sun", waterEveryDays: 7, fertilizeEveryDays: 45, season: "Summer", blurb: "Fragrant, pollinator-friendly and happiest when slightly neglected." },
-  { id: "l7", name: "Alpine Strawberry", latin: "Fragaria vesca", imageKey: "strawberry", category: "Fruits", difficulty: "Easy", sunlight: "Partial Sun", waterEveryDays: 3, fertilizeEveryDays: 14, season: "Late Spring – Autumn", blurb: "Small, intensely flavoured berries all season. Great for edging and pots." },
-  { id: "l8", name: "Monstera Deliciosa", latin: "Monstera deliciosa", imageKey: "monstera", category: "Houseplants", difficulty: "Easy", sunlight: "Indirect Light", waterEveryDays: 7, fertilizeEveryDays: 30, season: "Year-round", blurb: "Iconic split leaves. Water when the top two inches of soil are dry." },
-  { id: "l9", name: "Fiddle Leaf Fig", latin: "Ficus lyrata", imageKey: "fiddle", category: "Houseplants", difficulty: "Expert", sunlight: "Indirect Light", waterEveryDays: 7, fertilizeEveryDays: 30, season: "Year-round", blurb: "Dramatic and a little fussy. Bright light and a consistent spot are key." },
-  { id: "l10", name: "Snake Plant", latin: "Dracaena trifasciata", imageKey: "snake-plant", category: "Houseplants", difficulty: "Easy", sunlight: "Low Light", waterEveryDays: 14, fertilizeEveryDays: 60, season: "Year-round", blurb: "Nearly indestructible. Let the soil dry out completely between waterings." },
-  { id: "l11", name: "Golden Pothos", latin: "Epipremnum aureum", imageKey: "pothos", category: "Houseplants", difficulty: "Easy", sunlight: "Low Light", waterEveryDays: 8, fertilizeEveryDays: 30, season: "Year-round", blurb: "Trailing vines that forgive almost anything. Perfect for shelves." },
-  { id: "l12", name: "French Marigold", latin: "Tagetes patula", imageKey: "marigold", category: "Flowers", difficulty: "Easy", sunlight: "Full Sun", waterEveryDays: 4, fertilizeEveryDays: 30, season: "Summer – Autumn", blurb: "Cheerful companion plant that helps deter pests around vegetables." },
+  { id: "l1", name: "Cherry Tomato", latin: "Solanum lycopersicum", alternateNames: ["Tomato", "Sungold tomato"], family: "Solanaceae", nativeRegion: "Western South America", plantType: "Annual", environment: "Outdoor", edible: true, petSafe: false, matureSize: "1–3 m with support", growthHabit: "Vining, indeterminate or determinate", imageKey: "tomato", category: "Vegetables", difficulty: "Moderate", sunlight: "Full Sun", waterEveryDays: 2, fertilizeEveryDays: 14, season: "Spring – Summer", blurb: "Sweet, prolific and perfect for containers. Stake early and pinch side shoots." },
+  { id: "l2", name: "Bell Pepper", latin: "Capsicum annuum", alternateNames: ["Sweet pepper", "Capsicum"], family: "Solanaceae", nativeRegion: "Central and South America", plantType: "Annual", environment: "Outdoor", edible: true, petSafe: false, matureSize: "45–90 cm", growthHabit: "Bushy upright", imageKey: "pepper", category: "Vegetables", difficulty: "Moderate", sunlight: "Full Sun", waterEveryDays: 2, fertilizeEveryDays: 14, season: "Spring – Summer", blurb: "Loves heat. Start indoors early and transplant once nights stay warm." },
+  { id: "l3", name: "Butterhead Lettuce", latin: "Lactuca sativa", alternateNames: ["Bibb lettuce", "Boston lettuce"], family: "Asteraceae", nativeRegion: "Mediterranean region", plantType: "Annual", environment: "Outdoor", edible: true, petSafe: true, matureSize: "15–30 cm", growthHabit: "Compact rosette", imageKey: "lettuce", category: "Vegetables", difficulty: "Easy", sunlight: "Partial Sun", waterEveryDays: 2, fertilizeEveryDays: 21, season: "Spring & Autumn", blurb: "Tender cool-season leaves. Sow every two weeks for a steady harvest." },
+  { id: "l4", name: "Sweet Basil", latin: "Ocimum basilicum", alternateNames: ["Common basil", "Basil"], family: "Lamiaceae", nativeRegion: "Tropical regions of Asia", plantType: "Annual", environment: "Outdoor", edible: true, petSafe: true, matureSize: "30–60 cm", growthHabit: "Bushy upright", imageKey: "basil", category: "Herbs", difficulty: "Easy", sunlight: "Full Sun", waterEveryDays: 2, fertilizeEveryDays: 21, season: "Summer", blurb: "Pinch flower buds to keep leaves coming. Grows beautifully beside tomatoes." },
+  { id: "l5", name: "Rosemary", latin: "Salvia rosmarinus", alternateNames: ["Rosemary", "Rosmarinus officinalis"], family: "Lamiaceae", nativeRegion: "Mediterranean region", plantType: "Shrub", environment: "Outdoor", edible: true, petSafe: true, matureSize: "60–150 cm", growthHabit: "Woody evergreen shrub", imageKey: "rosemary", category: "Herbs", difficulty: "Easy", sunlight: "Full Sun", waterEveryDays: 10, fertilizeEveryDays: 60, season: "Year-round", blurb: "Drought-tolerant Mediterranean shrub. Prefers lean, fast-draining soil." },
+  { id: "l6", name: "English Lavender", latin: "Lavandula angustifolia", alternateNames: ["True lavender", "Common lavender"], family: "Lamiaceae", nativeRegion: "Western Mediterranean", plantType: "Shrub", environment: "Outdoor", edible: true, petSafe: false, matureSize: "45–90 cm", growthHabit: "Compact woody mound", imageKey: "lavender", category: "Herbs", difficulty: "Moderate", sunlight: "Full Sun", waterEveryDays: 7, fertilizeEveryDays: 45, season: "Summer", blurb: "Fragrant, pollinator-friendly and happiest when slightly neglected." },
+  { id: "l7", name: "Alpine Strawberry", latin: "Fragaria vesca", alternateNames: ["Wild strawberry", "Woodland strawberry"], family: "Rosaceae", nativeRegion: "Europe and temperate Asia", plantType: "Perennial", environment: "Outdoor", edible: true, petSafe: true, matureSize: "15–25 cm", growthHabit: "Low spreading perennial", imageKey: "strawberry", category: "Fruits", difficulty: "Easy", sunlight: "Partial Sun", waterEveryDays: 3, fertilizeEveryDays: 14, season: "Late Spring – Autumn", blurb: "Small, intensely flavoured berries all season. Great for edging and pots." },
+  { id: "l8", name: "Monstera Deliciosa", latin: "Monstera deliciosa", alternateNames: ["Swiss cheese plant", "Split-leaf philodendron"], family: "Araceae", nativeRegion: "Southern Mexico to Panama", plantType: "Vine", environment: "Indoor & Outdoor", edible: true, petSafe: false, matureSize: "1–3 m indoors", growthHabit: "Climbing evergreen vine", imageKey: "monstera", category: "Houseplants", difficulty: "Easy", sunlight: "Indirect Light", waterEveryDays: 7, fertilizeEveryDays: 30, season: "Year-round", blurb: "Iconic split leaves. Water when the top two inches of soil are dry." },
+  { id: "l9", name: "Fiddle Leaf Fig", latin: "Ficus lyrata", alternateNames: ["Fiddle-leaf fig", "Banjo fig"], family: "Moraceae", nativeRegion: "West and Central Africa", plantType: "Tree", environment: "Indoor", edible: false, petSafe: false, matureSize: "2–3 m indoors", growthHabit: "Single-stem upright tree", imageKey: "fiddle", category: "Houseplants", difficulty: "Expert", sunlight: "Indirect Light", waterEveryDays: 7, fertilizeEveryDays: 30, season: "Year-round", blurb: "Dramatic and a little fussy. Bright light and a consistent spot are key." },
+  { id: "l10", name: "Snake Plant", latin: "Dracaena trifasciata", alternateNames: ["Mother-in-law's tongue", "Saint George's sword"], family: "Asparagaceae", nativeRegion: "West Africa", plantType: "Perennial", environment: "Indoor", edible: false, petSafe: false, matureSize: "30–120 cm", growthHabit: "Clumping, upright evergreen", imageKey: "snake-plant", category: "Houseplants", difficulty: "Easy", sunlight: "Low Light", waterEveryDays: 14, fertilizeEveryDays: 60, season: "Year-round", blurb: "Nearly indestructible. Let the soil dry out completely between waterings." },
+  { id: "l11", name: "Golden Pothos", latin: "Epipremnum aureum", alternateNames: ["Devil's ivy", "Money plant"], family: "Araceae", nativeRegion: "Mo'orea, French Polynesia", plantType: "Vine", environment: "Indoor", edible: false, petSafe: false, matureSize: "Trailing 1–3 m", growthHabit: "Fast trailing or climbing vine", imageKey: "pothos", category: "Houseplants", difficulty: "Easy", sunlight: "Low Light", waterEveryDays: 8, fertilizeEveryDays: 30, season: "Year-round", blurb: "Trailing vines that forgive almost anything. Perfect for shelves." },
+  { id: "l12", name: "French Marigold", latin: "Tagetes patula", alternateNames: ["Marigold", "Dwarf marigold"], family: "Asteraceae", nativeRegion: "Mexico and Guatemala", plantType: "Annual", environment: "Outdoor", edible: true, petSafe: false, matureSize: "20–50 cm", growthHabit: "Compact branching annual", imageKey: "marigold", category: "Flowers", difficulty: "Easy", sunlight: "Full Sun", waterEveryDays: 4, fertilizeEveryDays: 30, season: "Summer – Autumn", blurb: "Cheerful companion plant that helps deter pests around vegetables." },
 ];
+
+export function searchLibraryPlants(query: string, plants: LibraryPlant[] = LIBRARY): LibraryPlant[] {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return plants;
+  return plants.filter((plant) =>
+    [plant.name, plant.latin, ...(plant.alternateNames ?? [])]
+      .some((value) => value.toLowerCase().includes(needle)),
+  );
+}
+
+export function findLibraryPlant(id: string): LibraryPlant | undefined {
+  return LIBRARY.find((plant) => plant.id === id);
+}
+
+export function getLibraryPlantCare(plant: LibraryPlant): NonNullable<LibraryPlant["care"]> {
+  if (plant.care) return plant.care;
+
+  const indoor = plant.environment?.includes("Indoor");
+  return {
+    introduction: plant.blurb,
+    watering:
+      `Use the ${plant.waterEveryDays}-day interval only as an estimated starting point. ` +
+      (indoor
+        ? "Check the potting mix before watering and let the suitable upper soil layer dry; adjust for pot size, season and indoor humidity."
+        : "Water according to soil moisture and rainfall, preferably early in the day. Adjust for temperature, drainage and plant maturity."),
+    soil:
+      "Use a clean, appropriate growing medium with drainage suited to this plant. Avoid waterlogged soil and compacted containers.",
+    sunlight:
+      `${plant.sunlight} is the general requirement. Bright, filtered conditions are preferable for indoor plants; outdoor plants should be protected from exposure stronger or weaker than their stated preference.`,
+    fertilizing:
+      `The library's starting estimate is fertilizing approximately every ${plant.fertilizeEveryDays} days during active growth. ` +
+      "Reduce or pause feeding during dormancy and follow a product label; exact dosage is not provided here.",
+    temperature:
+      "Maintain suitable local growing conditions and protect the plant from prolonged frost or heat stress. The exact preferred range was not available in the verified library data.",
+    humidity:
+      "Prefer the humidity range typical for the plant's native or growing environment. Adapt care to indoor or outdoor conditions rather than relying on a fixed schedule.",
+    maintenance:
+      `Growth habit: ${plant.growthHabit ?? "not specified"}. Mature size: ${plant.matureSize ?? "not specified"}. Pruning and propagation requirements should be checked against a reputable horticultural source for this species.`,
+    problems: [
+      { symptom: "Yellowing leaves", likelyCause: "Overwatering, underwatering, poor drainage or nutrient imbalance", solution: "Check soil moisture and roots, improve drainage, and correct watering before changing fertilizer." },
+      { symptom: "Brown leaf tips", likelyCause: "Low humidity, inconsistent watering or excess soluble salts", solution: "Stabilize watering and humidity; avoid repeated fertilizer use beyond plant needs." },
+    ],
+  };
+}
 
 export interface Guide {
   id: string;
