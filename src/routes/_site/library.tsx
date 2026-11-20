@@ -4,11 +4,13 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/app/bits";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { LIBRARY, getLibraryPlantCare, searchLibraryPlants, type LibraryCategory, type LibraryPlant } from "@/lib/data";
+import { LIBRARY, LOCATIONS, filterLibraryPlants, getLibraryPlantCare, searchLibraryPlants, type LibraryCategory, type LibraryPlant, type WaterNeed } from "@/lib/data";
 import { getToday, toISO } from "@/lib/dates";
 import { useAuth } from "@/lib/auth/context";
 import { useGarden } from "@/lib/garden-store";
+import { SUNLIGHT_LEVELS } from "@/lib/inventory";
 import { plantImage } from "@/lib/plant-images";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +28,8 @@ export const Route = createFileRoute("/_site/library")({
 });
 
 const CATEGORIES: ("All" | LibraryCategory)[] = ["All", "Vegetables", "Herbs", "Fruits", "Houseplants", "Flowers"];
+const SEASONS = [...new Set(LIBRARY.map((plant) => plant.season))].sort();
+const SUNLIGHT_OPTIONS = SUNLIGHT_LEVELS;
 
 const difficultyStyle = {
   Easy: "bg-leaf-soft text-primary",
@@ -41,30 +45,44 @@ function LibraryPage() {
   const [q, setQ] = useState("");
   const [environment, setEnvironment] = useState<"All" | "Indoor" | "Outdoor">("All");
   const [difficulty, setDifficulty] = useState<"All" | "Easy" | "Moderate" | "Expert">("All");
+  const [sunlight, setSunlight] = useState<"All" | LibraryPlant["sunlight"]>("All");
+  const [waterNeed, setWaterNeed] = useState<"All" | WaterNeed>("All");
+  const [season, setSeason] = useState("All");
+  const [edible, setEdible] = useState<"All" | "Yes" | "No">("All");
+  const [flowering, setFlowering] = useState<"All" | "Yes" | "No">("All");
   const [sort, setSort] = useState<"name" | "easy" | "low-water" | "high-water" | "indoor" | "outdoor">("name");
   const [selected, setSelected] = useState<LibraryPlant | null>(null);
+  const [adding, setAdding] = useState<LibraryPlant | null>(null);
+  const [location, setLocation] = useState("Living Room");
+  const [waterDays, setWaterDays] = useState(7);
+  const [fertilizeDays, setFertilizeDays] = useState(30);
 
   const suggestions = useMemo(() => searchLibraryPlants(q).slice(0, 6), [q]);
+  const activeFilters = cat !== "All" || environment !== "All" || difficulty !== "All" || sunlight !== "All" ||
+    waterNeed !== "All" || season !== "All" || edible !== "All" || flowering !== "All";
 
   const list = useMemo(() => {
-    const matches = searchLibraryPlants(q).filter(
-      (p) =>
-        (cat === "All" || p.category === cat) &&
-        (difficulty === "All" || p.difficulty === difficulty) &&
-        (environment === "All" ||
-          p.environment === "Indoor & Outdoor" ||
-          p.environment?.includes(environment)),
-    );
+    const matches = filterLibraryPlants(searchLibraryPlants(q), {
+      category: cat,
+      environment,
+      difficulty,
+      sunlight,
+      waterNeed,
+      season,
+      edible: edible === "All" ? "All" : edible === "Yes",
+      flowering: flowering === "All" ? "All" : flowering === "Yes",
+    });
     const difficultyRank = { Easy: 0, Moderate: 1, Expert: 2 };
+    const waterRank = { Low: 0, Moderate: 1, High: 2 };
     return [...matches].sort((a, b) => {
       if (sort === "easy") return difficultyRank[a.difficulty] - difficultyRank[b.difficulty];
-      if (sort === "low-water") return a.waterEveryDays - b.waterEveryDays;
-      if (sort === "high-water") return b.waterEveryDays - a.waterEveryDays;
+      if (sort === "low-water") return waterRank[a.waterNeed] - waterRank[b.waterNeed];
+      if (sort === "high-water") return waterRank[b.waterNeed] - waterRank[a.waterNeed];
       if (sort === "indoor") return Number(b.environment?.includes("Indoor")) - Number(a.environment?.includes("Indoor"));
       if (sort === "outdoor") return Number(b.environment?.includes("Outdoor")) - Number(a.environment?.includes("Outdoor"));
       return a.name.localeCompare(b.name);
     });
-  }, [cat, q, difficulty, environment, sort]);
+  }, [cat, q, difficulty, environment, sunlight, waterNeed, season, edible, flowering, sort]);
 
   const addFromLibrary = (p: LibraryPlant) => {
     if (!user) {
@@ -73,21 +91,31 @@ function LibraryPage() {
       return;
     }
     if (!ready) return;
+    setLocation(p.category === "Houseplants" ? "Living Room" : "Raised Bed A");
+    setWaterDays(p.waterEveryDays);
+    setFertilizeDays(p.fertilizeEveryDays);
+    setSelected(null);
+    setAdding(p);
+  };
+
+  const confirmAdd = () => {
+    if (!adding || !ready) return;
     const today = toISO(getToday());
     addPlant({
-      libraryPlantId: p.id,
-      name: p.name,
-      species: p.latin,
-      imageKey: p.imageKey,
-      location: p.category === "Houseplants" ? "Living Room" : "Raised Bed A",
-      sunlight: p.sunlight,
-      waterEveryDays: p.waterEveryDays,
-      fertilizeEveryDays: p.fertilizeEveryDays,
+      libraryPlantId: adding.id,
+      name: adding.name,
+      species: adding.latin,
+      imageKey: adding.imageKey,
+      location,
+      sunlight: adding.sunlight,
+      waterEveryDays: Math.max(1, waterDays),
+      fertilizeEveryDays: Math.max(1, fertilizeDays),
       health: "Healthy",
       lastWatered: today,
       lastFertilized: today,
     });
-    toast.success(`${p.name} added to My Garden`);
+    toast.success(`${adding.name} added to My Garden`);
+    setAdding(null);
   };
 
   return (
@@ -150,14 +178,45 @@ function LibraryPage() {
         <select aria-label="Difficulty" value={difficulty} onChange={(e) => setDifficulty(e.target.value as typeof difficulty)} className="h-9 rounded-lg border border-border bg-card px-3 text-xs font-semibold">
           <option>All</option><option>Easy</option><option>Moderate</option><option>Expert</option>
         </select>
+        <select aria-label="Sunlight requirement" value={sunlight} onChange={(e) => setSunlight(e.target.value as typeof sunlight)} className="h-9 rounded-lg border border-border bg-card px-3 text-xs font-semibold">
+          <option value="All">All light</option>
+          {SUNLIGHT_OPTIONS.map((option) => <option key={option}>{option}</option>)}
+        </select>
+        <select aria-label="Water needs" value={waterNeed} onChange={(e) => setWaterNeed(e.target.value as typeof waterNeed)} className="h-9 rounded-lg border border-border bg-card px-3 text-xs font-semibold">
+          <option value="All">All water needs</option><option>Low</option><option>Moderate</option><option>High</option>
+        </select>
+        <select aria-label="Growing season" value={season} onChange={(e) => setSeason(e.target.value)} className="h-9 rounded-lg border border-border bg-card px-3 text-xs font-semibold">
+          <option value="All">All seasons</option>
+          {SEASONS.map((value) => <option key={value}>{value}</option>)}
+        </select>
+        <select aria-label="Edible plants" value={edible} onChange={(e) => setEdible(e.target.value as typeof edible)} className="h-9 rounded-lg border border-border bg-card px-3 text-xs font-semibold">
+          <option value="All">Edible: any</option><option>Yes</option><option>No</option>
+        </select>
+        <select aria-label="Flowering plants" value={flowering} onChange={(e) => setFlowering(e.target.value as typeof flowering)} className="h-9 rounded-lg border border-border bg-card px-3 text-xs font-semibold">
+          <option value="All">Flowering: any</option><option>Yes</option><option>No</option>
+        </select>
         <select aria-label="Sort plants" value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="h-9 rounded-lg border border-border bg-card px-3 text-xs font-semibold">
           <option value="name">Alphabetical</option>
           <option value="easy">Easiest to grow</option>
-          <option value="low-water">Lowest watering needs</option>
-          <option value="high-water">Highest watering needs</option>
+          <option value="low-water">Lowest water needs</option>
+          <option value="high-water">Highest water needs</option>
           <option value="indoor">Best indoors</option>
           <option value="outdoor">Best outdoors</option>
         </select>
+        {activeFilters && (
+          <button type="button" onClick={() => {
+            setCat("All");
+            setEnvironment("All");
+            setDifficulty("All");
+            setSunlight("All");
+            setWaterNeed("All");
+            setSeason("All");
+            setEdible("All");
+            setFlowering("All");
+          }} className="h-9 rounded-lg px-3 text-xs font-semibold text-muted-foreground hover:text-primary">
+            Clear filters
+          </button>
+        )}
       </div>
 
       {list.length === 0 && <p className="py-16 text-center text-sm text-muted-foreground">No plants match that search.</p>}
@@ -178,9 +237,15 @@ function LibraryPage() {
               <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{p.blurb}</p>
               <div className="mt-4 flex flex-wrap gap-2 text-xs">
                 <span className="inline-flex items-center gap-1 rounded-md bg-background px-2 py-1 font-medium text-foreground"><Sun className="h-3.5 w-3.5 text-sun" /> {p.sunlight}</span>
-                <span className="inline-flex items-center gap-1 rounded-md bg-background px-2 py-1 font-medium text-foreground"><Droplets className="h-3.5 w-3.5 text-water" /> Every {p.waterEveryDays}d</span>
+                <span className="inline-flex items-center gap-1 rounded-md bg-background px-2 py-1 font-medium text-foreground"><Droplets className="h-3.5 w-3.5 text-water" /> {p.waterNeed} water</span>
                 <span className="rounded-md bg-background px-2 py-1 font-medium text-foreground">{p.season}</span>
+                <span className="rounded-md bg-background px-2 py-1 font-medium text-foreground">
+                  {p.fertilizeEveryDays <= 21 ? "Regular feeding" : p.fertilizeEveryDays <= 45 ? "Occasional feeding" : "Minimal feeding"}
+                </span>
               </div>
+              <button type="button" onClick={() => setSelected(p)} className="mt-4 text-left text-sm font-semibold text-primary underline-offset-4 hover:underline">
+                View details
+              </button>
               <button
                 type="button"
                 onClick={() => addFromLibrary(p)}
@@ -209,45 +274,68 @@ function LibraryPage() {
                     <p className="text-sm leading-relaxed text-muted-foreground">{care.introduction}</p>
                     <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
                       <span className="rounded-lg bg-secondary px-3 py-2"><strong>Family:</strong> {selected.family ?? "Not specified"}</span>
+                      <span className="rounded-lg bg-secondary px-3 py-2"><strong>Plant type:</strong> {selected.plantType ?? "Not specified"}</span>
                       <span className="rounded-lg bg-secondary px-3 py-2"><strong>Difficulty:</strong> {selected.difficulty}</span>
                       <span className="rounded-lg bg-secondary px-3 py-2"><strong>Mature size:</strong> {selected.matureSize ?? "Not specified"}</span>
                       <span className="rounded-lg bg-secondary px-3 py-2"><strong>Environment:</strong> {selected.environment ?? "Not specified"}</span>
                       <span className="rounded-lg bg-secondary px-3 py-2"><strong>Native region:</strong> {selected.nativeRegion ?? "Not specified"}</span>
+                      <span className="rounded-lg bg-secondary px-3 py-2"><strong>Growing season:</strong> {selected.season}</span>
                     </div>
                     {selected.alternateNames && selected.alternateNames.length > 0 && (
                       <p className="mt-3 text-xs text-muted-foreground">Also known as: {selected.alternateNames.join(", ")}</p>
                     )}
+                    <p className="mt-3 rounded-lg border border-border p-3 text-xs text-muted-foreground">
+                      Care notes are general guidance, not a fixed schedule. Species-specific source verification is not yet attached to this entry.
+                    </p>
                   </div>
                 </div>
 
-                <div className="mt-2 grid gap-3 md:grid-cols-2">
-                  {[
-                    ["Watering guide", care.watering],
-                    ["Sunlight guide", care.sunlight],
-                    ["Soil and growing medium", care.soil],
-                    ["Fertilizing guide", care.fertilizing],
-                    ["Temperature and humidity", `${care.temperature} ${care.humidity}`],
-                    ["Growth and maintenance", care.maintenance],
-                  ].map(([title, text]) => (
-                    <section key={title} className="rounded-xl border border-border p-4">
-                      <h3 className="font-display font-semibold text-primary">{title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
-                    </section>
-                  ))}
-                </div>
-
-                <section className="rounded-xl border border-border p-4">
-                  <h3 className="font-display font-semibold text-primary">Common problems</h3>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                    {care.problems.map((problem) => (
-                      <div key={problem.symptom} className="rounded-lg bg-background p-3">
-                        <p className="text-sm font-semibold">{problem.symptom}</p>
-                        <p className="mt-1 text-xs text-muted-foreground"><strong>Likely cause:</strong> {problem.likelyCause}</p>
-                        <p className="mt-1 text-xs text-muted-foreground"><strong>Solution:</strong> {problem.solution}</p>
+                <Accordion type="multiple" defaultValue={["watering"]} className="mt-2 rounded-xl border border-border px-4">
+                  <AccordionItem value="watering">
+                    <AccordionTrigger className="font-display font-semibold text-primary">Watering</AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-sm leading-relaxed text-muted-foreground">{care.watering}</p>
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        Reminder starting point: every {selected.waterEveryDays} days. Check the soil first and customize the reminder for your pot, weather and growing conditions.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="sunlight">
+                    <AccordionTrigger className="font-display font-semibold text-primary">Sunlight</AccordionTrigger>
+                    <AccordionContent><p className="text-sm leading-relaxed text-muted-foreground">{care.sunlight}</p></AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="soil">
+                    <AccordionTrigger className="font-display font-semibold text-primary">Soil and fertilizing</AccordionTrigger>
+                    <AccordionContent className="space-y-3">
+                      <p className="text-sm leading-relaxed text-muted-foreground"><strong>Soil:</strong> {care.soil}</p>
+                      <p className="text-sm leading-relaxed text-muted-foreground"><strong>Fertilizing:</strong> {care.fertilizing}</p>
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="climate">
+                    <AccordionTrigger className="font-display font-semibold text-primary">Temperature and humidity</AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-sm leading-relaxed text-muted-foreground">{care.temperature} {care.humidity}</p>
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="maintenance">
+                    <AccordionTrigger className="font-display font-semibold text-primary">Growth and maintenance</AccordionTrigger>
+                    <AccordionContent><p className="text-sm leading-relaxed text-muted-foreground">{care.maintenance}</p></AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="problems">
+                    <AccordionTrigger className="font-display font-semibold text-primary">Common problems</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {care.problems.map((problem) => (
+                          <div key={problem.symptom} className="rounded-lg bg-background p-3">
+                            <p className="text-sm font-semibold">{problem.symptom}</p>
+                            <p className="mt-1 text-xs text-muted-foreground"><strong>Likely cause:</strong> {problem.likelyCause}</p>
+                            <p className="mt-1 text-xs text-muted-foreground"><strong>Solution:</strong> {problem.solution}</p>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </section>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
 
                 <div className="flex justify-end">
                   <button type="button" onClick={() => { addFromLibrary(selected); setSelected(null); }} className="inline-flex h-11 items-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground">
@@ -257,6 +345,44 @@ function LibraryPage() {
               </>
             );
           })()}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!adding} onOpenChange={(open) => !open && setAdding(null)}>
+        <DialogContent className="rounded-2xl sm:max-w-lg">
+          {adding && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="font-display text-2xl text-primary">Personalize {adding.name}</DialogTitle>
+                <DialogDescription>
+                  These reminder intervals start from general estimates. Adjust them for your plant and conditions; you can change them later.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <label className="block space-y-1.5 text-sm font-medium">
+                  Location
+                  <select value={location} onChange={(event) => setLocation(event.target.value)} className="h-10 w-full rounded-lg border border-border bg-card px-3">
+                    {LOCATIONS.map((option) => <option key={option}>{option}</option>)}
+                  </select>
+                </label>
+                <label className="block space-y-1.5 text-sm font-medium">
+                  Watering reminder interval (days)
+                  <input type="number" min={1} value={waterDays} onChange={(event) => setWaterDays(Number(event.target.value))} className="h-10 w-full rounded-lg border border-border bg-card px-3" />
+                  <span className="block text-xs font-normal text-muted-foreground">{adding.wateringSummary}</span>
+                </label>
+                <label className="block space-y-1.5 text-sm font-medium">
+                  Fertilizing reminder interval (days)
+                  <input type="number" min={1} value={fertilizeDays} onChange={(event) => setFertilizeDays(Number(event.target.value))} className="h-10 w-full rounded-lg border border-border bg-card px-3" />
+                </label>
+                <div className="flex justify-end gap-2">
+                  <button type="button" onClick={() => setAdding(null)} className="h-10 rounded-lg px-4 text-sm font-semibold text-muted-foreground hover:bg-secondary">Cancel</button>
+                  <button type="button" onClick={confirmAdd} disabled={waterDays < 1 || fertilizeDays < 1} className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-50">
+                    <Plus className="h-4 w-4" /> Add to my garden
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>

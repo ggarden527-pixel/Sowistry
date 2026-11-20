@@ -8,6 +8,7 @@ import type { Task } from "@/lib/tasks";
 
 const basil: Plant = {
   id: "plant-1",
+  libraryPlantId: "l4",
   name: "Basil",
   species: "Ocimum basilicum",
   imageKey: "basil",

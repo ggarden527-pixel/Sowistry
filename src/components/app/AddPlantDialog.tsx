@@ -71,7 +71,7 @@ export function AddPlantDialog() {
       <DialogContent className="max-h-[92vh] overflow-y-auto rounded-2xl sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl text-primary">Add a new plant</DialogTitle>
-          <DialogDescription>We'll schedule watering and feeding reminders for you.</DialogDescription>
+          <DialogDescription>Choose a library plant or add your own. You can adjust the reminder estimates before saving.</DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div>
@@ -141,11 +141,11 @@ export function AddPlantDialog() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="pwater">Water every (days)</Label>
+              <Label htmlFor="pwater">Watering reminder interval (days)</Label>
               <Input id="pwater" type="number" min={1} value={form.waterEveryDays} onChange={(e) => set("waterEveryDays", Number(e.target.value))} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="pfeed">Fertilize every (days)</Label>
+              <Label htmlFor="pfeed">Fertilizing reminder interval (days)</Label>
               <Input id="pfeed" type="number" min={1} value={form.fertilizeEveryDays} onChange={(e) => set("fertilizeEveryDays", Number(e.target.value))} />
             </div>
             <div className="space-y-1.5 sm:col-span-2">

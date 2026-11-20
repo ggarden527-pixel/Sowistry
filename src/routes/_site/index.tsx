@@ -140,7 +140,7 @@ function HomePage() {
             <div aria-hidden className="surface absolute -top-5 right-4 hidden items-center gap-3 p-3 pr-5 sm:flex lg:-right-6">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent text-primary"><Sun className="h-5 w-5" /></span>
               <div>
-                <p className="text-sm font-semibold text-primary">Full sun · every 2 days</p>
+                <p className="text-sm font-semibold text-primary">Full sun · check soil moisture</p>
                 <p className="text-xs text-muted-foreground">Cherry tomato care</p>
               </div>
             </div>
@@ -286,7 +286,7 @@ function HomePage() {
                 </div>
                 <div className="p-4">
                   <p className="font-display text-lg font-semibold text-primary">{p.name}</p>
-                  <p className="text-xs text-muted-foreground">{p.sunlight} · water every {p.waterEveryDays} days</p>
+                  <p className="text-xs text-muted-foreground">{p.sunlight} · {p.waterNeed.toLowerCase()} water needs</p>
                 </div>
               </Link>
             ))}

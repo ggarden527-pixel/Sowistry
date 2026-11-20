@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Database } from "@/integrations/supabase/types";
+import { findLibraryPlantForGarden } from "@/lib/data";
 
 import type { Health, Plant, Sunlight } from "../inventory";
 import type { Task, TaskType } from "../tasks";
@@ -35,19 +36,23 @@ export const plantToRow = (userId: string, p: Plant): Insert<"plants"> => ({
   health: p.health,
 });
 
-const rowToPlant = (r: Row<"plants">): Plant => ({
-  id: r.id,
-  name: r.name,
-  species: r.species,
-  imageKey: r.image_key,
-  location: r.location,
-  lastWatered: r.last_watered,
-  waterEveryDays: r.water_every_days,
-  sunlight: r.sunlight as Sunlight,
-  lastFertilized: r.last_fertilized,
-  fertilizeEveryDays: r.fertilize_every_days,
-  health: r.health as Health,
-});
+const rowToPlant = (r: Row<"plants">): Plant => {
+  const libraryPlant = findLibraryPlantForGarden(r.name, r.species);
+  return {
+    id: r.id,
+    ...(libraryPlant ? { libraryPlantId: libraryPlant.id } : {}),
+    name: r.name,
+    species: r.species,
+    imageKey: r.image_key,
+    location: r.location,
+    lastWatered: r.last_watered,
+    waterEveryDays: r.water_every_days,
+    sunlight: r.sunlight as Sunlight,
+    lastFertilized: r.last_fertilized,
+    fertilizeEveryDays: r.fertilize_every_days,
+    health: r.health as Health,
+  };
+};
 
 export const taskToRow = (userId: string, t: Task): Insert<"tasks"> => ({
   user_id: userId,
