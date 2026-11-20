@@ -1,5 +1,10 @@
 # Sowistry roadmap
 
+## Persistent plant catalog
+- [ ] Add taxonomy, care, image attribution, sources and verification records; seed the existing 12 stable IDs
+- [ ] Add nullable catalog links without changing personal plants or schedules
+- [ ] Verify public published-only reads and admin-only writes; test storage round trips
+
 ## Public site + private dashboard
 - [x] Public homepage at / (hero, tools, featured guides, seasonal advice, newsletter, footer)
 - [x] Public, indexable Plant Library and Plant Guides (guide detail pages, sitemap, robots, canonical tags)
