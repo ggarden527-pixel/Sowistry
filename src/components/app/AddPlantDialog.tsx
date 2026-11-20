@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LOCATIONS } from "@/lib/data";
+import { LOCATIONS, searchLibraryPlants, type LibraryPlant } from "@/lib/data";
 import { getToday, toISO } from "@/lib/dates";
 import { useGarden } from "@/lib/garden-store";
 import { HEALTH_LEVELS, SUNLIGHT_LEVELS, type Health, type Sunlight } from "@/lib/inventory";
@@ -14,6 +14,7 @@ import { plantImage, plantImageKeys } from "@/lib/plant-images";
 import { cn } from "@/lib/utils";
 
 const empty = {
+  libraryPlantId: "",
   name: "",
   species: "",
   location: "Living Room",
@@ -28,12 +29,27 @@ export function AddPlantDialog() {
   const { addPlantOpen, setAddPlantOpen, addPlant } = useGarden();
   const [form, setForm] = useState(empty);
   const set = <K extends keyof typeof empty>(k: K, v: (typeof empty)[K]) => setForm((f) => ({ ...f, [k]: v }));
+  const suggestions = useMemo(() => searchLibraryPlants(form.name).slice(0, 6), [form.name]);
+
+  const selectLibraryPlant = (plant: LibraryPlant) => {
+    setForm((current) => ({
+      ...current,
+      libraryPlantId: plant.id,
+      name: plant.name,
+      species: plant.latin,
+      imageKey: plant.imageKey,
+      sunlight: plant.sunlight,
+      waterEveryDays: plant.waterEveryDays,
+      fertilizeEveryDays: plant.fertilizeEveryDays,
+    }));
+  };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) return;
     const todayISO = toISO(getToday());
     addPlant({
+      ...(form.libraryPlantId ? { libraryPlantId: form.libraryPlantId } : {}),
       name: form.name.trim(),
       species: form.species.trim() || "—",
       imageKey: form.imageKey,
@@ -80,7 +96,27 @@ export function AddPlantDialog() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="pname">Plant name</Label>
-              <Input id="pname" required value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="e.g. Sweet Basil" />
+              <div className="relative">
+                <Input id="pname" required value={form.name} onChange={(e) => setForm((current) => ({ ...current, name: e.target.value, libraryPlantId: "" }))} placeholder="Search Sweet Basil, tomato or a scientific name" />
+                {form.name.trim() && suggestions.length > 0 && (
+                  <div className="absolute z-30 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-border bg-card p-1 shadow-lift">
+                    {suggestions.map((plant) => (
+                      <button
+                        key={plant.id}
+                        type="button"
+                        onClick={() => selectLibraryPlant(plant)}
+                        className="flex w-full items-center gap-2 rounded-md p-2 text-left hover:bg-secondary"
+                      >
+                        <img src={plantImage(plant.imageKey)} alt="" className="h-8 w-8 rounded object-cover" />
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-semibold">{plant.name}</span>
+                          <span className="block truncate text-xs italic text-muted-foreground">{plant.latin}</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="pspecies">Species / variety</Label>

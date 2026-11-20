@@ -3,18 +3,22 @@ import { addDaysISO, daysFrom } from "./dates";
 export const HEALTH_LEVELS = ["Thriving", "Healthy", "Needs Attention", "At Risk"] as const;
 export type Health = (typeof HEALTH_LEVELS)[number];
 
-export const SUNLIGHT_LEVELS = ["Full Sun", "Partial Sun", "Indirect Light", "Low Light"] as const;
+export const SUNLIGHT_LEVELS = ["Full Sun", "Partial Sun", "Partial Shade", "Bright Indirect", "Indirect Light", "Medium Indirect", "Low Light"] as const;
 export type Sunlight = (typeof SUNLIGHT_LEVELS)[number];
 
 export const sunStrength: Record<Sunlight, number> = {
   "Full Sun": 3,
   "Partial Sun": 2,
+  "Partial Shade": 2,
+  "Bright Indirect": 2,
   "Indirect Light": 2,
+  "Medium Indirect": 1,
   "Low Light": 1,
 };
 
 export interface Plant {
   id: string;
+  libraryPlantId?: string;
   name: string;
   species: string;
   imageKey: string;
